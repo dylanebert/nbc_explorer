@@ -1,14 +1,5 @@
 var origin = window.location.origin
 
-function showImageSequence(idx) {
-    $.getJSON(origin + '/get_images?idx=' + idx, function(res) {
-        console.log(res)
-        let url = res[0]
-        let html = '<img src="' + url + '?' + new Date().getTime() + '">'
-        $('#imageplayer').append(html)
-    })
-}
-
 function showDependencyTable(idx) {
     $.getJSON(origin + '/get_phrase?idx=' + idx, function(svo) {
         $.each(svo, function(index, elems) {
@@ -27,14 +18,14 @@ function showDependencyTable(idx) {
 function select(id) {
     var elems = id.split('%'); var participant = elems[0]; var task = elems[1];
     var caption = elems[2]; var idx = parseInt(elems[3]); var phrase = elems[4]
+    let vidsrc = 'https://storage.cloud.google.com/nbc_release/phrases/' + idx + '.mp4'
     $('#main').empty()
     $('#main').append('<h1>' + phrase + '</h1>')
     $('#main').append('<h5>' + caption + '</h5>')
-    $('#main').append('<div id="imageplayer"></div>')
+    $('#main').append('<video src="' + vidsrc + '" type="video/mp4" controls></video>')
     $('#main').append(`<table class="table"><thead><tr>
         <th>index</th><th>token</th><th>lemma</th><th>dep</th><th>coref</th>
     </tr></thead><tbody id="dependencyTable"></tbody></table>`)
-    showImageSequence(idx)
     showDependencyTable(idx)
 }
 

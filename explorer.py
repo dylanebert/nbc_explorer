@@ -31,7 +31,7 @@ def get_images(idx):
     phrase = phrases.iloc[idx]
     steps = range(phrase['start_step'] - 450, phrase['end_step'] + 450, SKIP)
     for step in steps:
-        url = '/media/dylan/Elements/nbc/{0}/{0}_task{1}/{2}.png'.format(phrase['participant'], phrase['task'], step)
+        url = 'https://storage.cloud.google.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(phrase['participant'], phrase['task'], step)
         urls.append(url)
     return urls
 
