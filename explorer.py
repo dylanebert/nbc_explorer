@@ -4,6 +4,7 @@ import pickle
 import json
 import shutil
 from parse_captions import SVO
+from tqdm import tqdm
 
 SKIP = 3
 
@@ -30,16 +31,27 @@ def get_images(idx):
     phrase = phrases.iloc[idx]
     steps = range(phrase['start_step'] - 450, phrase['end_step'] + 450, SKIP)
     for step in steps:
-        url = 'https://storage.cloud.google.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(phrase['participant'], phrase['task'], step)
+        url = '/media/dylan/Elements/nbc/{0}/{0}_task{1}/{2}.png'.format(phrase['participant'], phrase['task'], step)
         urls.append(url)
-    return json.dumps(urls)
+    return urls
 
 def get_phrase(idx):
     phrase = phrases.iloc[idx]
     svo = phrase['svo'].df
     return svo.to_json(orient='index')
 
+def copy_phrase_images():
+    for idx, row in tqdm(phrases.iterrows(), total=len(phrases)):
+        urls = get_images(idx)
+        dest_dir = '/media/dylan/Elements/nbc/phrases/src/{}'.format(idx)
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        i = 0
+        for url in urls:
+            if os.path.exists(url):
+                dest = os.path.join(dest_dir, '{:04d}.png'.format(i))
+                shutil.copy(url, dest)
+                i += 1
+
 if __name__ == '__main__':
-    images = get_images(0)
-    print(len(json.loads(images)))
-    print('')
+    print(phrases)
