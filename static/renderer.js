@@ -18,11 +18,11 @@ function showDependencyTable(idx) {
 function select(id) {
     var elems = id.split('%'); var participant = elems[0]; var task = elems[1];
     var caption = elems[2]; var idx = parseInt(elems[3]); var phrase = elems[4]
-    let vidsrc = 'https://storage.cloud.google.com/nbc_release/phrases/' + idx + '.mp4'
+    let vidsrc = 'https://storage.googleapis.com/nbc_release/phrases/' + idx + '.mp4'
     $('#main').empty()
     $('#main').append('<h1>' + phrase + '</h1>')
     $('#main').append('<h5>' + caption + '</h5>')
-    $('#main').append('<video src="' + vidsrc + '" type="video/mp4" controls></video>')
+    $('#main').append('<video src="' + vidsrc + '" type="video/mp4" controls autoplay></video>')
     $('#main').append(`<table class="table"><thead><tr>
         <th>index</th><th>token</th><th>lemma</th><th>dep</th><th>coref</th>
     </tr></thead><tbody id="dependencyTable"></tbody></table>`)
@@ -32,7 +32,7 @@ function select(id) {
 function initializeTable() {
     $('#phrasesTable').DataTable({
         initComplete: function() {
-            this.api().columns([0, 1]).every(function() {
+            this.api().columns([1, 2]).every(function() {
                 var column = this
                 var select = $('<select><option value=""></option></select>')
                     .appendTo($(column.footer()).empty())
@@ -44,7 +44,7 @@ function initializeTable() {
                     select.append('<option value="' + d + '">' + d + '</option>')
                 })
             })
-            this.api().columns([2]).every(function() {
+            this.api().columns([3]).every(function() {
                 var column = this
                 var input = $('<input type="text" placeholder="Search">')
                     .appendTo($(column.footer()).empty())
@@ -70,6 +70,7 @@ function populate(phrases) {
                     let id = participant + '%' + task + '%' + caption + '%' + idx + '%' + phrase.phrase
                     let html = `
                         <tr id="` + id + `">
+                            <td>` + idx + `</td>
                             <td>` + participant + `</td>
                             <td>` + task + `</td>
                             <td>` + phrase.phrase + `</td>
