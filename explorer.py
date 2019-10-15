@@ -26,6 +26,14 @@ def get_phrases():
             d[k1] = {}
     return json.dumps(d)
 
+def get_phrase(idx):
+    return phrases.iloc[idx].drop('svo').to_json()
+
+def get_svo(idx):
+    phrase = phrases.iloc[idx]
+    svo = phrase['svo'].df
+    return svo.to_json(orient='index')
+
 def get_images(idx):
     urls = []
     phrase = phrases.iloc[idx]
@@ -34,11 +42,6 @@ def get_images(idx):
         url = 'https://storage.cloud.google.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(phrase['participant'], phrase['task'], step)
         urls.append(url)
     return urls
-
-def get_phrase(idx):
-    phrase = phrases.iloc[idx]
-    svo = phrase['svo'].df
-    return svo.to_json(orient='index')
 
 def copy_phrase_images():
     for idx, row in tqdm(phrases.iterrows(), total=len(phrases)):

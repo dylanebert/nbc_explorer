@@ -1,7 +1,7 @@
 var origin = window.location.origin
 
 function showDependencyTable(idx) {
-    $.getJSON(origin + '/get_phrase?idx=' + idx, function(svo) {
+    $.getJSON(origin + '/get_svo?idx=' + idx, function(svo) {
         $.each(svo, function(index, elems) {
             let html = `<tr>
                 <td>` + index + `</td>
