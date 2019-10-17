@@ -11,14 +11,7 @@ function getQuery(idx) {
 	$('#vid').attr('src', src).trigger('play')
 }
 
-$(document).ready(function() {
-	var url_string = window.location.href
-	var url = new URL(url_string)
-	var id = url.searchParams.get('id')
-	var phraseIdx = parseInt(url.searchParams.get('phrase'))
-	var queryIdx = parseInt(url.searchParams.get('query'))
-	getPhrase(phraseIdx)
-	getQuery(queryIdx)
+function configureSubmit(id) {
 	$('#likert').submit(function(event) {
 		event.preventDefault()
 		let res = parseInt($('input[name=inlineRadioOptions]:checked', '#likert').val())
@@ -31,4 +24,21 @@ $(document).ready(function() {
 			}
 		})
 	})
+}
+
+$(document).ready(function() {
+	var url_string = window.location.href
+	var url = new URL(url_string)
+	var id = url.searchParams.get('id')
+	if(id == null) {
+		$.getJSON(origin + '/find_id', function(res) {
+			window.location.href = window.location.href + '?id=' + res
+		})
+	} else {
+		$.getJSON(origin + '/get_res?id=' + id, function(res) {
+			getPhrase(res['pid'])
+			getQuery(res['qid'])
+			configureSubmit(id)
+		})
+	}
 })

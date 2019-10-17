@@ -17,6 +17,18 @@ def crowdsource():
 def get_phrases():
     return explorer.get_phrases()
 
+@app.route('/get_res')
+def get_res():
+    id = int(request.args.get('id'))
+    entity = explorer.get_response(id)
+    return entity
+
+@app.route('/find_id')
+def find_id():
+    id = explorer.find_id()
+    print(id)
+    return id
+
 @app.route('/get_phrase')
 def get_phrase():
     idx = int(request.args.get('idx'))
