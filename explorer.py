@@ -5,11 +5,13 @@ import json
 import shutil
 from parse_captions import SVO
 from tqdm import tqdm
+from google.cloud import datastore
 
 SKIP = 3
 
 with open('phrases.p', 'rb') as f:
     phrases = pickle.load(f)
+client = datastore.Client()
 
 def get_phrases():
     d = {}
@@ -55,6 +57,21 @@ def copy_phrase_images():
                 dest = os.path.join(dest_dir, '{:04d}.png'.format(i))
                 shutil.copy(url, dest)
                 i += 1
+
+def save_response(id, res):
+    key = client.key('Response', id)
+    task = datastore.Entity(key=key)
+    task['res'] = res
+    client.put(task)
+    print('Saved {}: {}'.format(task.key.name, task['res']))
+
+def get_response(id):
+    key = client.key('Response', id)
+    task = client.get(key)
+    if task is None:
+        return 'Key not found'
+    else:
+        return '{}: {}'.format(id, task['res'])
 
 if __name__ == '__main__':
     print(phrases)

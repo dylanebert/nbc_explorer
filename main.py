@@ -27,5 +27,17 @@ def get_svo():
     idx = int(request.args.get('idx'))
     return explorer.get_svo(idx)
 
+@app.route('/save_response')
+def save_response():
+    id = int(request.args.get('id'))
+    res = int(request.args.get('res'))
+    explorer.save_response(id, res)
+    return 'done'
+
+@app.route('/get_response')
+def get_response():
+    id = int(request.args.get('id'))
+    return explorer.get_response(id)
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)

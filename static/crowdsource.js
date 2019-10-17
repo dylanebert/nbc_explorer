@@ -21,7 +21,14 @@ $(document).ready(function() {
 	getQuery(queryIdx)
 	$('#likert').submit(function(event) {
 		event.preventDefault()
-		let input = parseInt($('input[name=inlineRadioOptions]:checked', '#likert').val())
-		console.log(id, input)
+		let res = parseInt($('input[name=inlineRadioOptions]:checked', '#likert').val())
+		let params = '?id=' + id + '&res=' + res
+		$.get(origin + '/save_response' + params, function(data) {
+			if(data == 'done') {
+				console.log('saved')
+			} else {
+				console.log(data)
+			}
+		})
 	})
 })
