@@ -19,10 +19,17 @@ function configureSubmit(id) {
 		$.get(origin + '/save_response' + params, function(data) {
 			if(data == 'done') {
 				console.log('saved')
+				next()
 			} else {
 				console.log(data)
 			}
 		})
+	})
+}
+
+function next() {
+	$.getJSON(origin + '/find_id', function(res) {
+		window.location.href = origin + '/crowdsource?id=' + res
 	})
 }
 
@@ -31,9 +38,7 @@ $(document).ready(function() {
 	var url = new URL(url_string)
 	var id = url.searchParams.get('id')
 	if(id == null) {
-		$.getJSON(origin + '/find_id', function(res) {
-			window.location.href = window.location.href + '?id=' + res
-		})
+		next()
 	} else {
 		$.getJSON(origin + '/get_res?id=' + id, function(res) {
 			getPhrase(res['pid'])
