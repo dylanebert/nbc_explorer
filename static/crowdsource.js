@@ -7,7 +7,7 @@ function getPhrase(idx) {
 }
 
 function getQuery(idx) {
-	let src = 'https://storage.cloud.google.com/nbc_release/phrases/' + idx + '.mp4'
+	let src = 'https://storage.googleapis.com/nbc_release/phrases/' + idx + '.mp4'
 	$('#vid').attr('src', src).trigger('play')
 }
 
@@ -40,7 +40,7 @@ $(document).ready(function() {
 	if(id == null) {
 		next()
 	} else {
-		$.getJSON(origin + '/get_res?id=' + id, function(res) {
+		$.getJSON(origin + '/get_entity?id=' + id, function(res) {
 			getPhrase(res['pid'])
 			getQuery(res['qid'])
 			configureSubmit(id)
