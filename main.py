@@ -15,7 +15,8 @@ def index():
 @app.route('/get_phrases')
 def get_phrases():
     phrases = explorer.get_phrases()
-    return json.dumps(phrases)
+    res = {'phrases': phrases, 'k': len(phrases)}
+    return json.dumps(res)
 
 @app.route('/get_phrase')
 def get_phrase():

@@ -62,25 +62,7 @@ function initializeTable() {
     $('.dataTables_filter').css('display', 'none')
 }
 
-function populate(phrases) {
-    $.each(phrases, function(participant, tasks) {
-        $.each(tasks, function(task, captions) {
-            $.each(captions, function(caption, phrases) {
-                $.each(phrases, function(idx, phrase) {
-                    let id = participant + '%' + task + '%' + caption + '%' + idx + '%' + phrase.phrase
-                    let html = `
-                        <tr id="` + id + `">
-                            <td>` + idx + `</td>
-                            <td>` + participant + `</td>
-                            <td>` + task + `</td>
-                            <td>` + phrase.phrase + `</td>
-                        </tr>
-                    `
-                    $('#phrasesBody').append(html)
-                })
-            })
-        })
-    })
+function initialize() {
     initializeTable()
     $('tbody tr').click(function(e) {
         e.preventDefault()
@@ -91,10 +73,37 @@ function populate(phrases) {
     }, function() {
         $(this).css('background-color', 'white')
     })
+    select($('.datarow').first().attr('id'))
+}
+
+function populate(phrases, k) {
+    let count = k
+    $.each(phrases, function(participant, tasks) {
+        $.each(tasks, function(task, captions) {
+            $.each(captions, function(caption, phrases) {
+                $.each(phrases, function(idx, phrase) {
+                    let id = participant + '%' + task + '%' + caption + '%' + idx + '%' + phrase.phrase
+                    let html = `
+                        <tr class="datarow" id="` + id + `">
+                            <td>` + idx + `</td>
+                            <td>` + participant + `</td>
+                            <td>` + task + `</td>
+                            <td>` + phrase.phrase + `</td>
+                        </tr>
+                    `
+                    $('#phrasesBody').append(html)
+                })
+            })
+        })
+        if (!--count) {
+            initialize()
+        }
+    })
 }
 
 $(document).ready(function() {
-    $.getJSON(origin + '/get_phrases', function(phrases) {
-        populate(phrases)
+    $.getJSON(origin + '/get_phrases', function(res) {
+        phrases = res['phrases']; k = res['k']
+        populate(phrases, k)
     })
 })
