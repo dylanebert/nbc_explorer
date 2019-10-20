@@ -2,6 +2,7 @@ import pandas as pd
 import pyinflect
 import inflect
 import numpy as np
+import pickle
 
 p = inflect.engine()
 
@@ -61,10 +62,27 @@ class SVOParser:
     def generate_q2(self, obj):
         if p.singular_noun(obj) is False:
             obj = p.a(obj)
-        return 'There is {} in the video'.format(obj)
+        return 'There is {}'.format(obj)
 
     def generate_q3(self, obj, q1):
         if p.singular_noun(obj) is False and obj not in ['it', 'him', 'her', 'them']:
             obj = 'the {}'.format(obj)
         q3 = q1.replace('something', obj)
         return q3
+
+if __name__ == '__main__':
+    with open('phrases.p', 'rb') as f:
+        phrases = pickle.load(f)
+    def add_questions(row):
+        try:
+            parser = SVOParser(row['svo'].df)
+        except:
+            return row
+        k = 1
+        for q in parser.questions:
+            row['q{}'.format(k)] = q
+            k += 1
+        return row
+    phrases = phrases.apply(lambda row: add_questions(row), axis=1)
+    with open('phrases_questions.p', 'wb+') as f:
+        pickle.dump(phrases, f)

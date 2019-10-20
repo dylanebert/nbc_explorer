@@ -4,11 +4,11 @@ import pickle
 import json
 import shutil
 from parse_captions import SVO
-import langutils
+import pandas as pd
 
 SKIP = 3
 
-with open('phrases.p', 'rb') as f:
+with open('phrases_questions.p', 'rb') as f:
     phrases = pickle.load(f)
 
 def get_phrases():
@@ -58,12 +58,12 @@ def copy_phrase_images():
 
 def get_questions(idx):
     phrase = phrases.loc[idx]
-    svo = phrase['svo'].df
-    try:
-        parser = langutils.SVOParser(svo)
-        return parser.questions
-    except:
-        return 'dne'
+    questions = []
+    for k in ['q1', 'q2', 'q3']:
+        if not pd.isnull(phrase[k]):
+            questions.append(phrase[k])
+    return questions
 
 if __name__ == '__main__':
-    print(get_questions(0))
+    for i in range(100):
+        print(get_questions(i))
