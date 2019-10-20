@@ -43,7 +43,7 @@ class SVOParser:
             obj = coref
         else:
             obj = obj['token']
-        return obj
+        return obj.lower()
 
     def generate_q1(self):
         verb = self.get_verb()
@@ -73,16 +73,13 @@ class SVOParser:
 if __name__ == '__main__':
     with open('phrases.p', 'rb') as f:
         phrases = pickle.load(f)
-    def add_questions(row):
+    questions = {}
+    for idx, row in phrases.iterrows():
         try:
             parser = SVOParser(row['svo'].df)
+            questions[idx] = parser.questions
         except:
-            return row
-        k = 1
-        for q in parser.questions:
-            row['q{}'.format(k)] = q
-            k += 1
-        return row
-    phrases = phrases.apply(lambda row: add_questions(row), axis=1)
-    with open('phrases_questions.p', 'wb+') as f:
-        pickle.dump(phrases, f)
+            questions[idx] = []
+            continue
+    with open('questions.p', 'wb+') as f:
+        pickle.dump(questions, f)

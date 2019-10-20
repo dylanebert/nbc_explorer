@@ -42,8 +42,11 @@ def save_response(id, val):
     key = client.key('response', key_id)
     res = datastore.Entity(key)
     res['eid'] = id
-    res['value'] = val
     res['date'] = date
+    k = 1
+    for q in val:
+        res['q{}'.format(k)] = q
+        k += 1
     client.put(res)
     print('Saved {}: {}'.format(id, val))
 
@@ -84,6 +87,17 @@ def clear_entities():
     for result in tqdm(results):
         delete_entity(result.key.id)
 
+def recount():
+    query = client.query(kind='entity')
+    entities = list(query.fetch())
+    for entity in tqdm(entities):
+        res_query = client.query(kind='response')
+        res_query.add_filter('eid', '=', int(entity.key.id))
+        res = list(res_query.fetch())
+        if entity['n_res'] is not len(res):
+            print('Updating {} n_res from {} to {}'.format(entity.key.id, entity['n_res'], len(res)))
+            entity['n_res'] = len(res)
+            client.put(entity)
+
 if __name__ == '__main__':
-    for i in range(100):
-        print(get_entity(find_id()))
+    pass

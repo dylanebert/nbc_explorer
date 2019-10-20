@@ -52,7 +52,7 @@ def get_response():
 @app.route('/save_response')
 def save_response():
     id = int(request.args.get('id'))
-    res = int(request.args.get('res'))
+    res = json.loads(request.args.get('res'))
     crowdsource.save_response(id, res)
     return 'done'
 

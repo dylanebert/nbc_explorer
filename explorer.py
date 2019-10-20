@@ -8,8 +8,10 @@ import pandas as pd
 
 SKIP = 3
 
-with open('phrases_questions.p', 'rb') as f:
+with open('phrases.p', 'rb') as f:
     phrases = pickle.load(f)
+with open('questions.p', 'rb') as f:
+    questions = pickle.load(f)
 
 def get_phrases():
     d = {}
@@ -57,12 +59,9 @@ def copy_phrase_images():
                 i += 1
 
 def get_questions(idx):
-    phrase = phrases.loc[idx]
-    questions = []
-    for k in ['q1', 'q2', 'q3']:
-        if not pd.isnull(phrase[k]):
-            questions.append(phrase[k])
-    return questions
+    if idx not in questions or len(questions[idx]) == 0:
+        raise 'Couldn\'t find questions for {}'.format(idx)
+    return questions[idx]
 
 if __name__ == '__main__':
     for i in range(100):
