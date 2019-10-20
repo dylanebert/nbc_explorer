@@ -15,6 +15,14 @@ function showDependencyTable(idx) {
     })
 }
 
+function showQuestions(idx) {
+    $.getJSON(origin + '/get_questions?idx=' + idx, function(questions) {
+        $.each(questions, function(_, question) {
+            $('#questions').append('<p>' + question + '</p>')
+        })
+    })
+}
+
 function select(id) {
     var elems = id.split('%'); var participant = elems[0]; var task = elems[1];
     var caption = elems[2]; var idx = parseInt(elems[3]); var phrase = elems[4]
@@ -26,7 +34,9 @@ function select(id) {
     $('#main').append(`<table class="table"><thead><tr>
         <th>index</th><th>token</th><th>lemma</th><th>dep</th><th>coref</th>
     </tr></thead><tbody id="dependencyTable"></tbody></table>`)
+    $('#main').append('<div id="questions"></div>')
     showDependencyTable(idx)
+    showQuestions(idx)
 }
 
 function initializeTable() {

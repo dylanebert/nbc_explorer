@@ -2,6 +2,7 @@ from tqdm import tqdm
 from google.cloud import datastore
 import random
 from datetime import datetime
+from explorer import phrases
 
 client = datastore.Client()
 
@@ -84,4 +85,5 @@ def clear_entities():
         delete_entity(result.key.id)
 
 if __name__ == '__main__':
-    generate_entities()
+    for i in range(100):
+        print(get_entity(find_id()))

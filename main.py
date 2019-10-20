@@ -28,6 +28,11 @@ def get_svo():
     idx = int(request.args.get('idx'))
     return explorer.get_svo(idx)
 
+@app.route('/get_questions')
+def get_questions():
+    idx = int(request.args.get('idx'))
+    return json.dumps(explorer.get_questions(idx))
+
 #---crowdsource---
 @app.route('/crowdsource')
 def crowdsource_page():

@@ -4,6 +4,7 @@ import pickle
 import json
 import shutil
 from parse_captions import SVO
+import langutils
 
 SKIP = 3
 
@@ -26,16 +27,16 @@ def get_phrases():
     return d
 
 def get_phrase(idx):
-    return phrases.iloc[idx].drop('svo').to_json()
+    return phrases.loc[idx].drop('svo').to_json()
 
 def get_svo(idx):
-    phrase = phrases.iloc[idx]
+    phrase = phrases.loc[idx]
     svo = phrase['svo'].df
     return svo.to_json(orient='index')
 
 def get_images(idx):
     urls = []
-    phrase = phrases.iloc[idx]
+    phrase = phrases.loc[idx]
     steps = range(phrase['start_step'] - 450, phrase['end_step'] + 450, SKIP)
     for step in steps:
         url = 'https://storage.cloud.google.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(phrase['participant'], phrase['task'], step)
@@ -55,5 +56,14 @@ def copy_phrase_images():
                 shutil.copy(url, dest)
                 i += 1
 
+def get_questions(idx):
+    phrase = phrases.loc[idx]
+    svo = phrase['svo'].df
+    try:
+        parser = langutils.SVOParser(svo)
+        return parser.questions
+    except:
+        return 'dne'
+
 if __name__ == '__main__':
-    pass
+    print(get_questions(0))
