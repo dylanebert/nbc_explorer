@@ -19,6 +19,7 @@ googleapis-common-protos==1.6.0
 grpcio==1.24.1
 httplib2==0.14.0
 idna==2.8
+inflect==2.1.0
 itsdangerous==1.1.0
 Jinja2==2.10.3
 jmespath==0.9.4
@@ -28,8 +29,10 @@ numpy==1.17.2
 pandas==0.25.1
 plac==0.9.6
 preshed==3.0.2
+protobuf==3.10.0
 pyasn1==0.4.7
 pyasn1-modules==0.2.7
+pyinflect==0.5.0
 python-dateutil==2.8.0
 pytz==2019.3
 PyYAML==5.1.2
