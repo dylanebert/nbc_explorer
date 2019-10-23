@@ -56,7 +56,7 @@ function initializeTable() {
             })
             this.api().columns([3]).every(function() {
                 var column = this
-                var input = $('<input type="text" placeholder="Search">')
+                var input = $('<input type="text">')
                     .appendTo($(column.footer()).empty())
                     .on('keyup change clear', function() {
                         if(column.search() !== this.value) {
