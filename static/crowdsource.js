@@ -29,9 +29,14 @@ function getQuestions(idx) {
 	$('#likertQuestions').empty()
 	$.getJSON(origin + '/get_questions?idx=' + idx, function(questions) {
 		$.each(questions, function(i, question) {
-			let likert = formLikert.replace(/name="q0"/g, 'name="q' + (i+1) + '"')
-			let html = `<h2 id="q` + (i+1) + `-text">` + question + `</h2>` + likert
-			$('#likertQuestions').append(html)
+			if(question != null) {
+				let likert = formLikert.replace(/name="q0"/g, 'name="q' + (i+1) + '"')
+				let html = `<h2 id="q` + (i+1) + `-text">` + question + `</h2>` + likert
+				$('#likertQuestions').append(html)
+				$('input[type=radio][name="q' + (i+1) + '"]').change(function() {
+					checkReadySubmit()
+				})
+			}
 		})
 	})
 }
@@ -39,6 +44,22 @@ function getQuestions(idx) {
 function getQuery(idx) {
 	let src = 'https://storage.googleapis.com/nbc_release/phrases/' + idx + '.mp4'
 	$('#vid').attr('src', src).trigger('play')
+}
+
+function checkReadySubmit() {
+	var names = {}
+	$(':radio').each(function() {
+		names[$(this).attr('name')] = true
+	})
+	var count = 0
+	$.each(names, function() {
+		count++
+	})
+	if($(':radio:checked').length == count) {
+		$('#submit').prop('disabled', false)
+	} else {
+		$('#submit').prop('disabled', true)
+	}
 }
 
 function configureSubmit(id) {
