@@ -2,7 +2,6 @@ from tqdm import tqdm
 from google.cloud import datastore
 import random
 from datetime import datetime
-from explorer import phrases
 
 client = datastore.Client()
 
@@ -56,12 +55,10 @@ def delete_response(id):
     eid = response['eid']
     client.delete(key)
 
-    key = client.key('entity', int(id))
+    key = client.key('entity', int(eid))
     entity = client.get(key)
     entity['n_res'] -= 1
     client.put(entity)
-
-    print('deleted {}'.format(id))
 
 def clear_responses(eid):
     query = client.query(kind='response')
@@ -69,17 +66,6 @@ def clear_responses(eid):
     results = list(query.fetch())
     for result in results:
         delete_response(result.key.id)
-
-def generate_entities():
-    from explorer import phrases
-    for idx, phrase in tqdm(phrases.iterrows(), total=len(phrases)):
-        pid, qid = idx, idx #phrase matches video
-        id = hash('{},{}'.format(pid, qid))
-        key = client.key('entity', id)
-        entity = datastore.Entity(key=key)
-        entity['pid'] = pid; entity['qid'] = qid
-        entity['n_res'] = 0
-        client.put(entity)
 
 def clear_entities():
     query = client.query(kind='entity')
@@ -100,4 +86,4 @@ def recount():
             client.put(entity)
 
 if __name__ == '__main__':
-    pass
+    clear_entities()
