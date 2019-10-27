@@ -3,6 +3,7 @@ import pyinflect
 import inflect
 import numpy as np
 import pickle
+import json
 
 p = inflect.engine()
 
@@ -165,5 +166,5 @@ if __name__ == '__main__':
     for idx, row in phrases.iterrows():
         parser = SVOParser(row['svo'].df)
         questions[idx] = parser.questions
-    with open('questions.p', 'wb+') as f:
-        pickle.dump(questions, f)
+    with open('questions.json', 'w+') as f:
+        f.write(json.dumps(questions, indent=4))

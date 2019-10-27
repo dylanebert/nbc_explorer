@@ -6,12 +6,11 @@ import shutil
 from parse_captions import SVO
 import pandas as pd
 
-SKIP = 3
-
 with open('phrases.p', 'rb') as f:
     phrases = pickle.load(f)
-with open('questions.p', 'rb') as f:
-    questions = pickle.load(f)
+with open('questions.json') as f:
+    questions = json.loads(f.read())
+print(questions)
 
 def get_phrases():
     d = {}
@@ -39,7 +38,7 @@ def get_svo(idx):
 def get_images(idx):
     urls = []
     phrase = phrases.loc[idx]
-    steps = range(phrase['start_step'] - 450, phrase['end_step'] + 450, SKIP)
+    steps = range(phrase['start_step'] - 450, phrase['end_step'] + 450, 3)
     for step in steps:
         url = 'https://storage.cloud.google.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(phrase['participant'], phrase['task'], step)
         urls.append(url)
@@ -59,8 +58,9 @@ def copy_phrase_images():
                 i += 1
 
 def get_questions(idx):
-    if idx not in questions or len(questions[idx]) == 0:
-        raise 'Couldn\'t find questions for {}'.format(idx)
+    idx = str(idx)
+    if idx not in questions:
+        raise ValueError('Couldn\'t find questions for {}'.format(idx))
     return questions[idx]
 
 if __name__ == '__main__':

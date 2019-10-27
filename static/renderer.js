@@ -17,8 +17,8 @@ function showDependencyTable(idx) {
 
 function showQuestions(idx) {
     $.getJSON(origin + '/get_questions?idx=' + idx, function(questions) {
-        $.each(questions, function(_, question) {
-            $('#questions').append('<p>' + question + '</p>')
+        $.each(questions, function(i, question) {
+            $('#questions').append('<p>Q' + (i + 1) + ': ' + question + '</p>')
         })
     })
 }
@@ -69,7 +69,6 @@ function initializeTable() {
         'scrollY': '768px',
         'scrollCollapse': true
     })
-    $('.dataTables_filter').css('display', 'none')
 }
 
 function initialize() {

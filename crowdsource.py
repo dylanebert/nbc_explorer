@@ -67,6 +67,12 @@ def clear_responses(eid):
     for result in results:
         delete_response(result.key.id)
 
+def clear_all_responses():
+    query = client.query(kind='response')
+    results = list(query.fetch())
+    for result in results:
+        delete_response(result.key.id)
+
 def clear_entities():
     query = client.query(kind='entity')
     results = list(query.fetch())
@@ -86,4 +92,4 @@ def recount():
             client.put(entity)
 
 if __name__ == '__main__':
-    clear_entities()
+    pass

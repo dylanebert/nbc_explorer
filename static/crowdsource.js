@@ -2,23 +2,15 @@ let formLikert = `
 <div class="form-group">
 	<div class="form-check form-check-inline">
 		<input class="form-check-input" type="radio" name="q0" id="radio1" value="1">
-		<label class="form-check-label" for="radio1">Strongly disagree</label>
+		<label class="form-check-label" for="radio1">Yes</label>
 	</div>
 	<div class="form-check form-check-inline">
 		<input class="form-check-input" type="radio" name="q0" id="radio2" value="2">
-		<label class="form-check-label" for="radio2">Disagree</label>
+		<label class="form-check-label" for="radio2">No</label>
 	</div>
 	<div class="form-check form-check-inline">
 		<input class="form-check-input" type="radio" name="q0" id="radio3" value="3">
-		<label class="form-check-label" for="radio3">Neutral</label>
-	</div>
-	<div class="form-check form-check-inline">
-		<input class="form-check-input" type="radio" name="q0" id="radio4" value="4">
-		<label class="form-check-label" for="radio4">Agree</label>
-	</div>
-	<div class="form-check form-check-inline">
-		<input class="form-check-input" type="radio" name="q0" id="radio5" value="5">
-		<label class="form-check-label" for="radio5">Strongly Agree</label>
+		<label class="form-check-label" for="radio2">Unsure</label>
 	</div>
 </div>
 `
@@ -43,7 +35,7 @@ function getQuestions(idx) {
 
 function getQuery(idx) {
 	let src = 'https://storage.googleapis.com/nbc_release/phrases/' + idx + '.mp4'
-	$('#vid').attr('src', src).trigger('play')
+	$('#vid').attr('src', src)
 }
 
 function checkReadySubmit() {
