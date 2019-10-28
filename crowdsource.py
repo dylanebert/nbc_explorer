@@ -91,5 +91,35 @@ def recount():
             entity['n_res'] = len(res)
             client.put(entity)
 
+def get_all_responses():
+    query = client.query(kind='response')
+    results = list(query.fetch())
+    return results
+
+def summarize():
+    import pandas as pd
+    responses = get_all_responses()
+    report = []
+    for response in responses:
+        entity = get_entity(response['eid'])
+        row = {
+            'eid': response['eid'],
+            'method': entity['method'],
+            'q1': -response['q1'] + 2,
+            'q2': -response['q2'] + 2,
+            'q3': -response['q3'] + 2
+        }
+        report.append(row)
+    report = pd.DataFrame(report)
+    agreed = 0; sum = 0
+    for _, group in report[report['method'] == 'pixelwise'].groupby('eid'):
+        if len(group) > 1:
+            for key in ['q1', 'q2', 'q3']:
+                if group.iloc[0][key] == group.iloc[1][key]:
+                    agreed += 1
+                sum += 1
+    print(agreed / float(sum))
+    print(report.groupby('eid').mean()[['q1', 'q2', 'q3']])
+
 if __name__ == '__main__':
-    pass
+    summarize()
