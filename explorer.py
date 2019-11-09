@@ -1,16 +1,13 @@
 import os
 import sys
-import pickle
 import json
 import shutil
 from parse_captions import SVO
 import pandas as pd
 
-with open('phrases.p', 'rb') as f:
-    phrases = pickle.load(f)
+phrases = pd.read_json('phrases.json', orient='index' )
 with open('questions.json') as f:
     questions = json.loads(f.read())
-print(questions)
 
 def get_phrases():
     d = {}

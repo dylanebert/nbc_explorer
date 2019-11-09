@@ -2,12 +2,13 @@ from tqdm import tqdm
 from google.cloud import datastore
 import random
 from datetime import datetime
+import pandas as pd
 
 client = datastore.Client()
 
 def find_id():
     query = client.query(kind='entity')
-    query.add_filter('n_res', '=', 1)
+    query.add_filter('n_res', '=', 0)
     results = list(query.fetch())
     if len(results) is 0:
         return 'No entities remaining'
@@ -17,11 +18,7 @@ def find_id():
 def get_entity(id):
     key = client.key('entity', int(id))
     entity = client.get(key)
-    if entity is None:
-        print('dne')
-        return 'dne'
-    else:
-        return entity
+    return entity
 
 def delete_entity(id):
     clear_responses(id)
@@ -30,7 +27,7 @@ def delete_entity(id):
 
 def save_response(id, val):
     entity = get_entity(id)
-    if entity is 'dne':
+    if entity is None:
         return entity
     else:
         entity['n_res'] += 1
@@ -97,11 +94,12 @@ def get_all_responses():
     return results
 
 def summarize():
-    import pandas as pd
     responses = get_all_responses()
     report = []
     for response in responses:
         entity = get_entity(response['eid'])
+        if entity is None:
+            continue
         row = {
             'eid': response['eid'],
             'method': entity['method'],
@@ -119,7 +117,7 @@ def summarize():
                     agreed += 1
                 sum += 1
     print(agreed / float(sum))
-    print(report.groupby('eid').mean()[['q1', 'q2', 'q3']])
+    print(report.groupby('method').mean()[['q1', 'q2', 'q3']])
 
 if __name__ == '__main__':
     summarize()
