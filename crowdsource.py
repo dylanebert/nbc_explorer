@@ -9,6 +9,7 @@ client = datastore.Client()
 def find_id():
     query = client.query(kind='entity')
     query.add_filter('n_res', '=', 0)
+    #query.add_filter('method', '=', 'single_trajectories')
     results = list(query.fetch())
     if len(results) is 0:
         return 'No entities remaining'
