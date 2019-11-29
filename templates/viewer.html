@@ -151,7 +151,6 @@ function play(side) {
 $(document).ready(function() {
     $('#startStepInputA').change(function() {
         $('#endStepInputA').val(parseInt($(this).val()) + 64)
-        $('#startStepInputB').val(parseInt($(this).val()) + 64).trigger('change')
     })
     $('#startStepInputB').change(function() {
         $('#endStepInputB').val(parseInt($(this).val()) + 64)
