@@ -21,111 +21,150 @@
 <body>
 <div class="container">
     <h1>NBC Event Viewer</h1>
-    <div class="row" id="players"></div>
-    <form class="form" id="playForm">
-        <div class="form-group">
-            <div class="form-row">
-                <div class="col">
-                    <label for="participantDropdown">Participant</label>
-                    <select class="form-control mb-2 mr-sm-2" id="participantDropdown">
-                        <option selected>1_1a</option>
-                        <option>2_2a</option>
-                        <option>3_1b</option>
-                        <option>4_2b</option>
-                        <option>5_1c</option>
-                        <option>6_2c</option>
-                        <option>7_1a</option>
-                        <option>8_2a</option>
-                        <option>9_1b</option>
-                        <option>10_2b</option>
-                        <option>11_1c</option>
-                        <option>12_2c</option>
-                        <option>13_1a</option>
-                        <option>14_2a</option>
-                        <option>15_1b</option>
-                        <option>16_2b</option>
-                        <option>17_1c</option>
-                        <option>18_2c</option>
-                    </select>
+    <div class="row">
+        <div class="col-sm-6">
+            <div id="playerAWrapper"></div>
+            <form class="form playForm" data-side="A">
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="participantDropdownA">Participant A</label>
+                            <select class="form-control mb-2 mr-sm-2" id="participantDropdownA">
+                                <option selected>1_1a</option>
+                                <option>2_2a</option>
+                                <option>3_1b</option>
+                                <option>4_2b</option>
+                                <option>5_1c</option>
+                                <option>6_2c</option>
+                                <option>7_1a</option>
+                                <option>8_2a</option>
+                                <option>9_1b</option>
+                                <option>10_2b</option>
+                                <option>11_1c</option>
+                                <option>12_2c</option>
+                                <option>13_1a</option>
+                                <option>14_2a</option>
+                                <option>15_1b</option>
+                                <option>16_2b</option>
+                                <option>17_1c</option>
+                                <option>18_2c</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="taskDropdownA">Task A</label>
+                            <select class="form-control mb-2 mr-sm-2" id="taskDropdownA">
+                                <option selected>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="startStepInputA">A: Start Step</label>
+                            <input id="startStepInputA" type="number" class="form-control" value="0">
+                        </div>
+                        <div class="col">
+                            <label for="endStepInputA">A: End Step</label>
+                            <input id="endStepInputA" type="number" class="form-control" value="64">
+                        </div>
+                    </div>
                 </div>
-                <div class="col">
-                    <label for="taskDropdown">Task</label>
-                    <select class="form-control mb-2 mr-sm-2" id="taskDropdown">
-                        <option selected>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="col">
-                    <label for="startStepInputA">A: Start Step</label>
-                    <input id="startStepInputA" type="number" class="form-control" value="0">
-                </div>
-                <div class="col">
-                    <label for="endStepInputA">A: End Step</label>
-                    <input id="endStepInputA" type="number" class="form-control" value="64">
-                </div>
-                <div class="col">
-                    <label for="startStepInputB">B: Start Step</label>
-                    <input id="startStepInputB" type="number" class="form-control" value="64">
-                </div>
-                <div class="col">
-                    <label for="endStepInputB">B: End Step</label>
-                    <input id="endStepInputB" type="number" class="form-control" value="128">
-                </div>
-            </div>
+                <button type="submit" class="btn btn-secondary">View</button>
+            </form>
         </div>
-        <button type="submit" class="btn btn-secondary">View</button>
-    </form>
+        <div class="col-sm-6">
+            <div id="playerBWrapper"></div>
+            <form class="form playForm" data-side="B">
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="participantDropdownB">Participant B</label>
+                            <select class="form-control mb-2 mr-sm-2" id="participantDropdownB">
+                                <option selected>1_1a</option>
+                                <option>2_2a</option>
+                                <option>3_1b</option>
+                                <option>4_2b</option>
+                                <option>5_1c</option>
+                                <option>6_2c</option>
+                                <option>7_1a</option>
+                                <option>8_2a</option>
+                                <option>9_1b</option>
+                                <option>10_2b</option>
+                                <option>11_1c</option>
+                                <option>12_2c</option>
+                                <option>13_1a</option>
+                                <option>14_2a</option>
+                                <option>15_1b</option>
+                                <option>16_2b</option>
+                                <option>17_1c</option>
+                                <option>18_2c</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="taskDropdownB">Task B</label>
+                            <select class="form-control mb-2 mr-sm-2" id="taskDropdownB">
+                                <option selected>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="startStepInputB">B: Start Step</label>
+                            <input id="startStepInputB" type="number" class="form-control" value="0">
+                        </div>
+                        <div class="col">
+                            <label for="endStepInputB">B: End Step</label>
+                            <input id="endStepInputB" type="number" class="form-control" value="64">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-secondary">View</button>
+            </form>
+        </div>
+    </div>
+    <div class="row" id="players"></div>
 </div>
 </body>
 <script type="text/javascript" src="../dist/jquery.imgplay.min.js"></script>
 <script>
-let playerHtml = `
-<div class="col-sm-6">
-    <div id="playerA" class="imageplayer"></div>
-</div>
-<div class="col-sm-6">
-    <div id="playerB" class="imageplayer"></div>
-</div>`
-
-function play() {
-    //$('#playerA').data('imgplay').stop()
-    //$('#playerB').data('imgplay').stop()
-    let participant = $('#participantDropdown').val()
-    let task = $('#taskDropdown').val()
-    let startStepA = parseInt($('#startStepInputA').val())
-    let endStepA = parseInt($('#endStepInputA').val())
-    let startStepB = parseInt($('#startStepInputB').val())
-    let endStepB = parseInt($('#endStepInputB').val())
-    for(i = startStepA; i < endStepA; i += 3) {
+function play(side) {
+    let participant = $('#participantDropdown' + side).val()
+    let task = $('#taskDropdown' + side).val()
+    let startStep = parseInt($('#startStepInput' + side).val())
+    let endStep = parseInt($('#endStepInput' + side).val())
+    for(i = startStep; i < endStep; i += 3) {
         let line = `<img src="/media/dylan/Elements/nbc/images/` + participant + `/` + participant + `_task` + task + `/` + i + `.png" />`
-        $('#playerA').append(line)
+        $('#player' + side).append(line)
     }
-    for(i = startStepB; i < endStepB; i += 3) {
-        let line = `<img src="/media/dylan/Elements/nbc/images/` + participant + `/` + participant + `_task` + task + `/` + i + `.png" />`
-        $('#playerB').append(line)
-    }
-    $('#playerA').imgplay({rate: 30}).data('imgplay').play()
-    $('#playerB').imgplay({rate: 30}).data('imgplay').play()
+    $('#player' + side).imgplay({rate: 30}).data('imgplay').play()
 }
 
 $(document).ready(function() {
     $('#startStepInputA').change(function() {
         $('#endStepInputA').val(parseInt($(this).val()) + 64)
-        $('#startStepInputB').val(parseInt($(this).val()) + 128).trigger('change')
+        $('#startStepInputB').val(parseInt($(this).val()) + 64).trigger('change')
     })
     $('#startStepInputB').change(function() {
         $('#endStepInputB').val(parseInt($(this).val()) + 64)
     })
-    $('#playForm').submit(function(e) {
+    $('.playForm').submit(function(e) {
         e.preventDefault()
-        $('#players').html(playerHtml)
-        play()
+        let side = $(this).data('side')
+        if(side == 'A') {
+            $('#playerAWrapper').html(`<div id="playerA" class="imageplayer"></div>`)
+        } else {
+            $('#playerBWrapper').html(`<div id="playerB" class="imageplayer"></div>`)
+        }
+        play(side)
     })
 })
 </script>
