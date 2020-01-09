@@ -7,14 +7,18 @@ import pandas as pd
 client = datastore.Client()
 
 def find_id():
-    query = client.query(kind='entity')
-    query.add_filter('n_res', '=', 0)
-    #query.add_filter('method', '=', 'single_trajectories')
-    results = list(query.fetch())
-    if len(results) is 0:
-        return 'No entities remaining'
-    choice = random.choice(results)
-    return str(choice.key.id)
+    methods = ['matching', 'single_trajectories', 'pixelwise', 'conv_transform_absolute', 'svd3']
+    random.shuffle(methods)
+    for method in methods:
+        query = client.query(kind='entity')
+        query.add_filter('n_res', '=', 1)
+        query.add_filter('method', '=', method)
+        results = list(query.fetch())
+        if len(results) > 0:
+            print(method)
+            choice = random.choice(results)
+            return str(choice.key.id)
+    return None
 
 def get_entity(id):
     key = client.key('entity', int(id))
