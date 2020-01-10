@@ -7,7 +7,7 @@ import pandas as pd
 client = datastore.Client()
 
 def find_id():
-    methods = ['matching', 'single_trajectories', 'pixelwise', 'conv_transform_absolute', 'svd3']
+    methods = ['matching', 'single_trajectories', 'pixelwise', 'conv_transform_absolute', 'svd3', 'random']
     random.shuffle(methods)
     for method in methods:
         query = client.query(kind='entity')
