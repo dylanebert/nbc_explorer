@@ -114,15 +114,17 @@ def summarize():
         }
         report.append(row)
     report = pd.DataFrame(report)
-    agreed = 0; sum = 0
-    for _, group in report[report['method'] == 'pixelwise'].groupby('eid'):
+    print(report.groupby('method').mean()[['q1', 'q2', 'q3']])
+
+    '''agreed = 0; sum = 0
+    for _, group in report.groupby('eid'):
         if len(group) > 1:
             for key in ['q1', 'q2', 'q3']:
                 if group.iloc[0][key] == group.iloc[1][key]:
                     agreed += 1
                 sum += 1
     print(agreed / float(sum))
-    print(report.groupby('method').mean()[['q1', 'q2', 'q3']])
+    print(report.groupby('method').mean()[['q1', 'q2', 'q3']])'''
 
 if __name__ == '__main__':
     summarize()
