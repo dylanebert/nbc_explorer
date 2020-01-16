@@ -14,24 +14,12 @@ def index():
 
 @app.route('/get_phrases')
 def get_phrases():
-    phrases = explorer.get_phrases()
-    res = {'phrases': phrases, 'k': len(phrases)}
-    return json.dumps(res)
+    return explorer.get_phrases()
 
 @app.route('/get_phrase')
 def get_phrase():
     idx = int(request.args.get('idx'))
-    return explorer.get_phrase(idx)
-
-@app.route('/get_svo')
-def get_svo():
-    idx = int(request.args.get('idx'))
-    return explorer.get_svo(idx)
-
-@app.route('/get_questions')
-def get_questions():
-    idx = int(request.args.get('idx'))
-    return json.dumps(explorer.get_questions(idx))
+    return explorer.get_phrase_data(idx)
 
 #---crowdsource---
 @app.route('/crowdsource')

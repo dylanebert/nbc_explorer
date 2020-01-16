@@ -1,20 +1,23 @@
 var origin = window.location.origin
+var phrases;
 
 function select(id) {
-    var elems = id.split('%'); var participant = elems[0]; var task = elems[1];
-    var caption = elems[2]; var idx = parseInt(elems[3]); var phrase = elems[4]
-    let vidsrc = 'https://storage.googleapis.com/nbc_release/phrases/' + idx + '.mp4'
-    $('#main').empty()
-    $('#main').append('<h1>' + phrase + '</h1>')
-    $('#main').append('<h5>' + caption + '</h5>')
-    $('#main').append('<video src="' + vidsrc + '" type="video/mp4" controls autoplay></video>')
-    $('#main').append(`<table class="table"><thead><tr>
-        <th>index</th><th>token</th><th>lemma</th><th>dep</th><th>coref</th>
-    </tr></thead><tbody id="dependencyTable"></tbody></table>`)
-    $('#main').append('<div id="questions"></div>')
+    let idx = parseInt(id.replace('phrase-', ''))
+    let phrase = phrases[idx]
+    $.getJSON(origin + '/get_phrase?idx=' + idx, function(res) {
+        $('#main').empty()
+        if (phrase['object'] == null) {
+            $('#main').append('<h1>' + idx + ': ' + phrase['verb'] + ', ' + phrase['object'] + '</h1>')
+        } else {
+
+        }
+        $('#main').append('<h3><b>Phrase:</b> ' + res['phrase'] + '</h3>')
+        $('#main').append('<h5><b>Caption:</b> ' + res['caption'] + '</h5>')
+    })
+    //$('#main').append('<video src="' + vidsrc + '" type="video/mp4" controls autoplay></video>')
 }
 
-function initializeTable() {
+function initialize() {
     $('#phrasesTable').DataTable({
         initComplete: function() {
             this.api().columns([1, 2]).every(function() {
@@ -44,10 +47,6 @@ function initializeTable() {
         'scrollY': '768px',
         'scrollCollapse': true
     })
-}
-
-function initialize() {
-    initializeTable()
     $('tbody tr').click(function(e) {
         e.preventDefault()
         select($(this).attr('id'))
@@ -60,34 +59,25 @@ function initialize() {
     select($('.datarow').first().attr('id'))
 }
 
-function populate(phrases, k) {
-    let count = k
-    $.each(phrases, function(participant, tasks) {
-        $.each(tasks, function(task, captions) {
-            $.each(captions, function(caption, phrases) {
-                $.each(phrases, function(idx, phrase) {
-                    let id = participant + '%' + task + '%' + caption + '%' + idx + '%' + phrase.phrase
-                    let html = `
-                        <tr class="datarow" id="` + id + `">
-                            <td>` + idx + `</td>
-                            <td>` + participant + `</td>
-                            <td>` + task + `</td>
-                            <td>` + phrase.phrase + `</td>
-                        </tr>
-                    `
-                    $('#phrasesBody').append(html)
-                })
-            })
-        })
-        if (!--count) {
-            initialize()
-        }
+function populate() {
+    $.each(phrases, function(idx, phrase) {
+        let html = `
+            <tr class="datarow" id="phrase-` + idx + `">
+                <td>` + idx + `</td>
+                <td>` + phrase['participant'] + `</td>
+                <td>` + phrase['task'] + `</td>
+                <td>` + phrase['verb'] + `</td>
+                <td>` + phrase['object'] + `</td>
+            </tr>
+        `
+        $('#phrasesBody').append(html)
     })
+    initialize()
 }
 
 $(document).ready(function() {
     $.getJSON(origin + '/get_phrases', function(res) {
-        phrases = res['phrases']; k = res['k']
-        populate(phrases, k)
+        phrases = res;
+        populate()
     })
 })

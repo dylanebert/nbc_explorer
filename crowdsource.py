@@ -115,6 +115,7 @@ def summarize():
         report.append(row)
     report = pd.DataFrame(report)
     print(report.groupby('method').mean()[['q1', 'q2', 'q3']])
+    report.to_json('/media/dylan/Elements/nbc/report.json', orient='index')
 
     '''agreed = 0; sum = 0
     for _, group in report.groupby('eid'):
