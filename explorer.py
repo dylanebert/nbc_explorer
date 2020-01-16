@@ -5,13 +5,12 @@ import shutil
 from parse_captions import SVO
 import pandas as pd
 
-phrases = pd.read_json('phrases.json', orient='index' )
-with open('questions.json') as f:
-    questions = json.loads(f.read())
+phrases = pd.read_json('phrases.json', orient='index')
 
 def get_phrases():
     d = {}
     phrases_ = phrases.drop('svo', axis=1)
+    print(phrases_)
     groups = phrases_.groupby(['participant', 'task', 'caption']) \
         .apply(lambda x: x.to_json(orient='index'))
     for (k1, k2, k3), v in groups.items():
@@ -23,14 +22,6 @@ def get_phrases():
         else:
             d[k1] = {}
     return d
-
-def get_phrase(idx):
-    return phrases.loc[idx].drop('svo').to_json()
-
-def get_svo(idx):
-    phrase = phrases.loc[idx]
-    svo = phrase['svo'].df
-    return svo.to_json(orient='index')
 
 def get_images(idx):
     urls = []
@@ -54,12 +45,5 @@ def copy_phrase_images():
                 shutil.copy(url, dest)
                 i += 1
 
-def get_questions(idx):
-    idx = str(idx)
-    if idx not in questions:
-        raise ValueError('Couldn\'t find questions for {}'.format(idx))
-    return questions[idx]
-
 if __name__ == '__main__':
-    for i in range(100):
-        print(get_questions(i))
+    phrases = get_phrases()
