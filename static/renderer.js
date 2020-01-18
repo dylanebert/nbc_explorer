@@ -1,31 +1,32 @@
 var origin = window.location.origin
 var phrases;
+var currentID = 0;
 
-function loadVideo(idx) {
-    $.getJSON(origin + '/get_images?idx=' + idx, function(res) {
-        $('#main').append(`<div id="player" class="imageplayer"></div>`)
-        $.each(res, function(i, url) {
-            let line = `<img src="` + url + `"/>`
-            $('#player').append(line)
-        })
-        $('#player').imgplay({rate: 30}).data('imgplay').play()
+function loadVideo(urls) {
+    $('#main').append(`<div id="player" class="imageplayer"></div>`)
+    $.each(urls, function(i, url) {
+        let line = `<img src="` + url + `"/>`
+        $('#player').append(line)
     })
+    $('#player').imgplay({rate: 30}).data('imgplay').play()
 }
 
 function select(id) {
+    currentID = id
     let idx = parseInt(id.replace('phrase-', ''))
     let phrase = phrases[idx]
-    $.getJSON(origin + '/get_phrase?idx=' + idx, function(res) {
+    let method = $('#changepointSelect').children('option:selected').val()
+    $.getJSON(origin + '/get_phrase?idx=' + idx + '&method=' + method, function(phraseData) {
         $('#main').empty()
         if (phrase['object'] == null) {
             $('#main').append('<h1>' + idx + ': ' + phrase['verb'] + '</h1>')
         } else {
             $('#main').append('<h1>' + idx + ': ' + phrase['verb'] + ' (' + phrase['object'] + ')</h1>')
         }
-        $('#main').append('<h3><b>Phrase:</b> ' + res['phrase'] + '</h3>')
-        $('#main').append('<p><b>Caption:</b> ' + res['caption'] + '</p>')
-        $('#main').append('<p>' + res['start_step'] + ' - '+ res['end_step'] + '</p>')
-        loadVideo(idx)
+        $('#main').append('<h3><b>Phrase:</b> ' + phraseData['phrase'] + '</h3>')
+        $('#main').append('<p><b>Caption:</b> ' + phraseData['caption'] + '</p>')
+        $('#main').append('<p>' + phraseData['start_step'] + ' - '+ phraseData['end_step'] + '</p>')
+        loadVideo(phraseData['images'])
     })
 }
 
@@ -67,6 +68,9 @@ function initialize() {
         $(this).css('background-color', '#eeeeee')
     }, function() {
         $(this).css('background-color', 'white')
+    })
+    $('#changepointSelect').change(function() {
+        select(currentID)
     })
     select($('.datarow').first().attr('id'))
 }

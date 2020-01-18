@@ -28,6 +28,12 @@ tfoot {
     height: 50px;
     background-color: #eeeeee;
 }
+.panel-default {
+    margin-top: 25px;
+    padding-top: 25px;
+    padding-bottom: 10px;
+    border-top: 1px solid grey;
+}
 </style>
 <body>
 <div class="container">
@@ -53,6 +59,19 @@ tfoot {
         <tbody id="phrasesBody">
         </tbody>
     </table>
+</div>
+<div class="container">
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <label for="changepointSelect">Segmentation method</label>
+                <select class="form-control" id="changepointSelect">
+                    <option value="hand_seg">Hand Changepoints</option>
+                    <option value="obj_seg">Object Motion</option>
+                </select>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="container" id="main">
 

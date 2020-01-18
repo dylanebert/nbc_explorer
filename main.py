@@ -19,12 +19,8 @@ def get_phrases():
 @app.route('/get_phrase')
 def get_phrase():
     idx = int(request.args.get('idx'))
-    return explorer.get_phrase_data(idx)
-
-@app.route('/get_images')
-def get_images():
-    idx = int(request.args.get('idx'))
-    return explorer.get_images(idx)
+    method = request.args.get('method')
+    return explorer.get_phrase_data(idx, method)
 
 #---crowdsource---
 @app.route('/crowdsource')
