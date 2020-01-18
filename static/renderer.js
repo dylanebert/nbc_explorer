@@ -1,20 +1,32 @@
 var origin = window.location.origin
 var phrases;
 
+function loadVideo(idx) {
+    $.getJSON(origin + '/get_images?idx=' + idx, function(res) {
+        $('#main').append(`<div id="player" class="imageplayer"></div>`)
+        $.each(res, function(i, url) {
+            let line = `<img src="` + url + `"/>`
+            $('#player').append(line)
+        })
+        $('#player').imgplay({rate: 30}).data('imgplay').play()
+    })
+}
+
 function select(id) {
     let idx = parseInt(id.replace('phrase-', ''))
     let phrase = phrases[idx]
     $.getJSON(origin + '/get_phrase?idx=' + idx, function(res) {
         $('#main').empty()
         if (phrase['object'] == null) {
-            $('#main').append('<h1>' + idx + ': ' + phrase['verb'] + ', ' + phrase['object'] + '</h1>')
+            $('#main').append('<h1>' + idx + ': ' + phrase['verb'] + '</h1>')
         } else {
-
+            $('#main').append('<h1>' + idx + ': ' + phrase['verb'] + ' (' + phrase['object'] + ')</h1>')
         }
         $('#main').append('<h3><b>Phrase:</b> ' + res['phrase'] + '</h3>')
-        $('#main').append('<h5><b>Caption:</b> ' + res['caption'] + '</h5>')
+        $('#main').append('<p><b>Caption:</b> ' + res['caption'] + '</p>')
+        $('#main').append('<p>' + res['start_step'] + ' - '+ res['end_step'] + '</p>')
+        loadVideo(idx)
     })
-    //$('#main').append('<video src="' + vidsrc + '" type="video/mp4" controls autoplay></video>')
 }
 
 function initialize() {
@@ -32,7 +44,7 @@ function initialize() {
                     select.append('<option value="' + d + '">' + d + '</option>')
                 })
             })
-            this.api().columns([3]).every(function() {
+            this.api().columns([3, 4]).every(function() {
                 var column = this
                 var input = $('<input type="text">')
                     .appendTo($(column.footer()).empty())
@@ -44,7 +56,7 @@ function initialize() {
             })
         },
         'paging': false,
-        'scrollY': '768px',
+        'scrollY': '300px',
         'scrollCollapse': true
     })
     $('tbody tr').click(function(e) {

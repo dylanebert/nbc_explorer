@@ -21,6 +21,11 @@ def get_phrase():
     idx = int(request.args.get('idx'))
     return explorer.get_phrase_data(idx)
 
+@app.route('/get_images')
+def get_images():
+    idx = int(request.args.get('idx'))
+    return explorer.get_images(idx)
+
 #---crowdsource---
 @app.route('/crowdsource')
 def crowdsource_page():
