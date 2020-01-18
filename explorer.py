@@ -5,7 +5,7 @@ import shutil
 from parse_captions import SVO
 import pandas as pd
 
-phrases = pd.read_json('D:/nbc/phrases.json', orient='index')
+phrases = pd.read_json('phrases.json', orient='index')
 
 def get_phrases():
     phrases_ = phrases[['participant', 'task', 'verb', 'object']]
