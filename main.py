@@ -17,10 +17,15 @@ def get_phrases():
     return explorer.get_phrases()
 
 @app.route('/get_phrase')
-def get_phrase():
+def get_phrase_data():
     idx = int(request.args.get('idx'))
     method = request.args.get('method')
     return explorer.get_phrase_data(idx, method)
+
+@app.route('/get_questions')
+def get_questions():
+    idx = int(request.args.get('idx'))
+    return explorer.get_questions(idx)
 
 #---crowdsource---
 @app.route('/crowdsource')

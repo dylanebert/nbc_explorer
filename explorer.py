@@ -26,6 +26,14 @@ def get_phrase_data(idx, method='hand_seg'):
     }
     return json.dumps(data)
 
+with open('questions.json') as f:
+    questions = json.loads(f.read())
+def get_questions(idx):
+    idx = str(idx)
+    if idx not in questions:
+        raise ValueError('Couldn\'t find questions for {}'.format(idx))
+    return json.dumps(questions[idx])
+
 if __name__ == '__main__':
     print(get_images(0))
     pass

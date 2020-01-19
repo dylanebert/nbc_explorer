@@ -11,7 +11,7 @@ def find_id():
     random.shuffle(methods)
     for method in methods:
         query = client.query(kind='entity')
-        query.add_filter('n_res', '=', 1)
+        query.add_filter('n_res', '=', 2)
         query.add_filter('method', '=', method)
         results = list(query.fetch())
         if len(results) > 0:
@@ -31,6 +31,9 @@ def delete_entity(id):
     client.delete(key)
 
 def save_response(id, val):
+    print('Saving disabled')
+    return
+
     entity = get_entity(id)
     if entity is None:
         return entity
