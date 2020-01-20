@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NBC Explorer</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='jquery.imgplay.css') }}" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<style>
+tfoot {
+    display: table-header-group;
+}
+#phrasesTable tbody tr:hover {
+    cursor: pointer;
+}
+.imageplayer {
+    height: 540px;
+    overflow: hidden;
+}
+.page-footer {
+    height: 50px;
+    background-color: #eeeeee;
+}
+.panel-default {
+    margin-top: 25px;
+    padding-top: 25px;
+    padding-bottom: 10px;
+    border-top: 1px solid grey;
+}
+</style>
+<body>
+<div class="container">
+    <table id="phrasesTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>participant</th>
+                <th>task</th>
+                <th>phrase</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </tfoot>
+        <tbody id="phrasesBody">
+        </tbody>
+    </table>
+</div>
+<div class="container" id="main">
+
+</div>
+<div class="page-footer">
+
+</div>
+</body>
+<script src="{{ url_for('static', filename='jquery.imgplay.min.js') }}"></script>
+<script>
+var origin = window.location.origin
+var phrases;
+var currentID = 0;
+
+function select(id) {
+    $('#main').empty()
+    currentID = id
+    let idx = parseInt(id.replace('phrase-', ''))
+    let phrase = phrases[idx]
+    $('#main').append('<h3><b>Phrase:</b> ' + phrase['phrase'] + '</h3>')
+    $('#main').append('<p><b>Caption:</b> ' + phrase['caption'] + '</p>')
+    let vidurl = 'https://storage.cloud.google.com/nbc_release/phrases/' + idx + '.mp4'
+    $('#main').append('<video src="' + vidurl + '" controls></video>')
+}
+
+function initialize() {
+    $('#phrasesTable').DataTable({
+        initComplete: function() {
+            this.api().columns([1, 2]).every(function() {
+                var column = this
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo($(column.footer()).empty())
+                    .on('change', function() {
+                        var val = $.fn.dataTable.util.escapeRegex($(this).val())
+                        column.search(val ? '^' + val + '$' : '', true, false).draw()
+                    })
+                column.data().unique().sort().each(function(d, j) {
+                    select.append('<option value="' + d + '">' + d + '</option>')
+                })
+            })
+            this.api().columns([3]).every(function() {
+                var column = this
+                var input = $('<input type="text">')
+                    .appendTo($(column.footer()).empty())
+                    .on('keyup change clear', function() {
+                        if(column.search() !== this.value) {
+                            column.search(this.value).draw()
+                        }
+                    })
+            })
+        },
+        'paging': false,
+        'scrollY': '300px',
+        'scrollCollapse': true
+    })
+    $('tbody tr').click(function(e) {
+        e.preventDefault()
+        select($(this).attr('id'))
+    })
+    $('tbody tr').hover(function() {
+        $(this).css('background-color', '#eeeeee')
+    }, function() {
+        $(this).css('background-color', 'white')
+    })
+    select($('.datarow').first().attr('id'))
+}
+
+function populate() {
+    $.each(phrases, function(idx, phrase) {
+        let html = `
+            <tr class="datarow" id="phrase-` + idx + `">
+                <td>` + idx + `</td>
+                <td>` + phrase['participant'] + `</td>
+                <td>` + phrase['task'] + `</td>
+                <td>` + phrase['phrase'] + `</td>
+            </tr>
+        `
+        $('#phrasesBody').append(html)
+    })
+    initialize()
+}
+
+$(document).ready(function() {
+    $.getJSON(origin + '/get_phrases_old', function(res) {
+        phrases = res
+        populate()
+    })
+})
+
+</script>
+</html>

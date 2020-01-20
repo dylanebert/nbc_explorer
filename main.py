@@ -12,9 +12,17 @@ CORS(app)
 def index():
     return render_template('index.html')
 
+@app.route('/viewer')
+def viewer():
+    return render_template('phrase_viewer.html')
+
 @app.route('/get_phrases')
 def get_phrases():
     return explorer.get_phrases()
+
+@app.route('/get_phrases_old')
+def get_phrases_old():
+    return explorer.get_phrases_old()
 
 @app.route('/get_phrase')
 def get_phrase_data():

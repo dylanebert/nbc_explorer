@@ -160,8 +160,7 @@ class SVOParser:
         return subject, verb, object
 
 if __name__ == '__main__':
-    with open('phrases.p', 'rb') as f:
-        phrases = pickle.load(f)
+    phrases = pd.read_json('phrases_old.json', orient='index')
     questions = {}
     for idx, row in phrases.iterrows():
         parser = SVOParser(row['svo'].df)

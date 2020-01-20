@@ -6,10 +6,15 @@ from parse_captions import SVO
 import pandas as pd
 
 phrases = pd.read_json('phrases.json', orient='index')
+phrases_old = pd.read_json('phrases_old.json', orient='index')
 
 def get_phrases():
     phrases_ = phrases[['participant', 'task', 'verb', 'object']]
     return phrases_.to_json(orient='index')
+
+def get_phrases_old():
+    phrases_old_ = phrases_old[['participant', 'task', 'caption', 'phrase']]
+    return phrases_old_.to_json(orient='index')
 
 def get_phrase_data(idx, method='hand_seg'):
     phrase = phrases.loc[idx]
@@ -35,5 +40,5 @@ def get_questions(idx):
     return json.dumps(questions[idx])
 
 if __name__ == '__main__':
-    print(get_images(0))
+    get_phrases_old()
     pass
