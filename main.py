@@ -8,11 +8,11 @@ app = Flask(__name__)
 CORS(app)
 
 #---explorer---
-@app.route('/')
+@app.route('/viewer')
 def index():
     return render_template('index.html')
 
-@app.route('/viewer')
+@app.route('/')
 def viewer():
     return render_template('phrase_viewer.html')
 

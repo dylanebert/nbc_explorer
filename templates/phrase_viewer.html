@@ -78,7 +78,7 @@ function select(id) {
     let phrase = phrases[idx]
     $('#main').append('<h3><b>Phrase:</b> ' + phrase['phrase'] + '</h3>')
     $('#main').append('<p><b>Caption:</b> ' + phrase['caption'] + '</p>')
-    let vidurl = 'https://storage.cloud.google.com/nbc_release/phrases/' + idx + '.mp4'
+    let vidurl = 'https://storage.googleapis.com/nbc_release/phrases/' + idx + '.mp4'
     $('#main').append('<video src="' + vidurl + '" controls></video>')
 }
 

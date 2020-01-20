@@ -20,7 +20,7 @@ def get_phrase_data(idx, method='hand_seg'):
     phrase = phrases.loc[idx]
     seg = json.loads(phrase[method])
     steps = range(seg['start_step'], seg['end_step'], 3)
-    urls = ['https://storage.cloud.google.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(
+    urls = ['https://storage.googleapis.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(
         phrase['participant'], phrase['task'], step) for step in steps]
     data = {
         'phrase': phrase['phrase'],
