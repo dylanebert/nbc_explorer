@@ -7,16 +7,21 @@ import pandas as pd
 from tqdm import tqdm
 
 phrases = pd.read_json('phrases.json', orient='index')
+phrases_old = pd.read_json('phrases_old.json', orient='index')
 
 def get_phrases():
     phrases_ = phrases[['participant', 'task', 'verb', 'object']]
     return phrases_.to_json(orient='index')
 
+def get_phrases_old():
+    phrases_old_ = phrases_old[['participant', 'task', 'caption', 'phrase']]
+    return phrases_old_.to_json(orient='index')
+
 def get_phrase_data(idx, method='hand_seg'):
     phrase = phrases.loc[idx]
     seg = json.loads(phrase[method])
     steps = range(seg['start_step'], seg['end_step'], 3)
-    urls = ['https://storage.cloud.google.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(
+    urls = ['https://storage.googleapis.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(
         phrase['participant'], phrase['task'], step) for step in steps]
     data = {
         'phrase': phrase['phrase'],
@@ -56,5 +61,5 @@ def copy_phrase_images():
                     i += 1
 
 if __name__ == '__main__':
-    copy_phrase_images()
+    get_phrases_old()
     pass
