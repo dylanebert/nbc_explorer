@@ -103,21 +103,25 @@ def get_all_responses():
 
 def summarize():
     responses = get_all_responses()
+    phrases = pd.read_json('/media/dylan/Elements/nbc/phrases_old.json', orient='index')
     report = []
     for response in responses:
         entity = get_entity(response['eid'])
         if entity is None:
             continue
+        query = phrases.loc[entity['qid']]
+        phrase = phrases.loc[entity['pid']]
         row = {
             'eid': response['eid'],
             'method': entity['method'],
             'q1': -response['q1'] + 2,
             'q2': -response['q2'] + 2,
-            'q3': -response['q3'] + 2
+            'q3': -response['q3'] + 2,
+            'query': query,
+            'phrase': phrase
         }
         report.append(row)
     report = pd.DataFrame(report)
-    print(report.groupby('method').mean()[['q1', 'q2', 'q3']])
     report.to_json('/media/dylan/Elements/nbc/report.json', orient='index')
 
     '''agreed = 0; sum = 0

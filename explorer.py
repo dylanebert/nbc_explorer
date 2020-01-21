@@ -4,6 +4,7 @@ import json
 import shutil
 from parse_captions import SVO
 import pandas as pd
+from tqdm import tqdm
 
 phrases = pd.read_json('phrases.json', orient='index')
 
@@ -34,6 +35,26 @@ def get_questions(idx):
         raise ValueError('Couldn\'t find questions for {}'.format(idx))
     return json.dumps(questions[idx])
 
+def copy_phrase_images():
+    for method in ['obj_seg', 'hand_seg']:
+        for idx, row in tqdm(phrases.iterrows(), total=len(phrases)):
+            try:
+                phrase_data = json.loads(get_phrase_data(idx, method))
+            except:
+                print(method, idx, row)
+                continue
+            dest_dir = '/media/dylan/Elements/nbc/videos/{}/src/{}'.format(method, idx)
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
+            i = 0
+            for url in phrase_data['images']:
+                source = url.replace('https://storage.cloud.google.com/nbc_release',
+                    '/media/dylan/Elements/nbc/images')
+                dest = os.path.join(dest_dir, '{:04d}.png'.format(i))
+                if os.path.exists(source) and not os.path.exists(dest):
+                    shutil.copy(source, dest)
+                    i += 1
+
 if __name__ == '__main__':
-    print(get_images(0))
+    copy_phrase_images()
     pass
