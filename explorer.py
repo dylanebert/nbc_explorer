@@ -23,12 +23,15 @@ def get_phrase_data(idx, method='hand_seg'):
     steps = range(seg['start_step'], seg['end_step'], 3)
     urls = ['https://storage.googleapis.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(
         phrase['participant'], phrase['task'], step) for step in steps]
+    vid_url = 'https://storage.googleapis.com/nbc_release/videos/{}/{}.mp4'.format(
+        method, idx)
     data = {
         'phrase': phrase['phrase'],
         'caption': phrase['caption'],
         'start_step': seg['start_step'],
         'end_step': seg['end_step'],
-        'images': urls
+        'images': urls,
+        'video': vid_url
     }
     return json.dumps(data)
 
@@ -61,5 +64,4 @@ def copy_phrase_images():
                     i += 1
 
 if __name__ == '__main__':
-    get_phrases_old()
     pass

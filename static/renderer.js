@@ -2,13 +2,17 @@ var origin = window.location.origin
 var phrases;
 var currentID = 0;
 
-function loadVideo(urls) {
+/*function loadVideo(urls) {
     $('#main').append(`<div id="player" class="imageplayer"></div>`)
     $.each(urls, function(i, url) {
         let line = `<img src="` + url + `"/>`
         $('#player').append(line)
     })
     $('#player').imgplay({rate: 30}).data('imgplay').play()
+}*/
+
+function loadVideo(url) {
+    $('#main').append('<video src="' + url + '" controls></video>')
 }
 
 function select(id) {
@@ -26,7 +30,7 @@ function select(id) {
         $('#main').append('<h3><b>Phrase:</b> ' + phraseData['phrase'] + '</h3>')
         $('#main').append('<p><b>Caption:</b> ' + phraseData['caption'] + '</p>')
         $('#main').append('<p>' + phraseData['start_step'] + ' - '+ phraseData['end_step'] + '</p>')
-        loadVideo(phraseData['images'])
+        loadVideo(phraseData['video'])
     })
 }
 
