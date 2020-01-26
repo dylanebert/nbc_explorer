@@ -19,7 +19,10 @@ def get_phrases_old():
 
 def get_phrase_data(idx, method='hand_seg'):
     phrase = phrases.loc[idx]
-    seg = json.loads(phrase[method])
+    try:
+        seg = json.loads(phrase[method])
+    except:
+        return json.dumps({'error': 'No segment found for this segmentation method'.format(method)})
     steps = range(seg['start_step'], seg['end_step'], 3)
     urls = ['https://storage.googleapis.com/nbc_release/{0}/{0}_task{1}/{2}.png'.format(
         phrase['participant'], phrase['task'], step) for step in steps]
@@ -46,22 +49,33 @@ def get_questions(idx):
 def copy_phrase_images():
     for method in ['obj_seg', 'hand_seg']:
         for idx, row in tqdm(phrases.iterrows(), total=len(phrases)):
-            try:
-                phrase_data = json.loads(get_phrase_data(idx, method))
-            except:
-                print(method, idx, row)
-                continue
+            phrase_data = json.loads(get_phrase_data(idx, method))
             dest_dir = '/media/dylan/Elements/nbc/videos/{}/src/{}'.format(method, idx)
             if not os.path.exists(dest_dir):
                 os.makedirs(dest_dir)
             i = 0
             for url in phrase_data['images']:
-                source = url.replace('https://storage.cloud.google.com/nbc_release',
+                source = url.replace('https://storage.googleapis.com/nbc_release',
                     '/media/dylan/Elements/nbc/images')
                 dest = os.path.join(dest_dir, '{:04d}.png'.format(i))
                 if os.path.exists(source) and not os.path.exists(dest):
                     shutil.copy(source, dest)
                     i += 1
 
+def validate_phrase_data():
+    phrases = pd.read_json('phrases.json', orient='index')
+    for idx, phrase in phrases.iterrows():
+        try:
+            json.loads(phrase['hand_seg'])
+        except:
+            print(idx)
+            print(phrase, '\n')
+        try:
+            json.loads(phrase['obj_seg'])
+        except:
+            print(idx)
+            print(phrase['participant'], phrase['task'], '\n')
+
 if __name__ == '__main__':
+    copy_phrase_images()
     pass

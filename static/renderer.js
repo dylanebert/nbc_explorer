@@ -27,10 +27,15 @@ function select(id) {
         } else {
             $('#main').append('<h1>' + idx + ': ' + phrase['verb'] + ' (' + phrase['object'] + ')</h1>')
         }
-        $('#main').append('<h3><b>Phrase:</b> ' + phraseData['phrase'] + '</h3>')
-        $('#main').append('<p><b>Caption:</b> ' + phraseData['caption'] + '</p>')
-        $('#main').append('<p>' + phraseData['start_step'] + ' - '+ phraseData['end_step'] + '</p>')
-        loadVideo(phraseData['video'])
+        if('error' in phraseData) {
+            $('#main').append('<p>Error: ' + phraseData['error'] + '</p>')
+        }
+        else {
+            $('#main').append('<h3><b>Phrase:</b> ' + phraseData['phrase'] + '</h3>')
+            $('#main').append('<p><b>Caption:</b> ' + phraseData['caption'] + '</p>')
+            $('#main').append('<p>' + phraseData['start_step'] + ' - '+ phraseData['end_step'] + '</p>')
+            loadVideo(phraseData['video'])
+        }
     })
 }
 
