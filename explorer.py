@@ -2,7 +2,6 @@ import os
 import sys
 import json
 import shutil
-from parse_captions import SVO
 import pandas as pd
 from tqdm import tqdm
 

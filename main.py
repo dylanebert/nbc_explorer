@@ -58,5 +58,16 @@ def save_response():
     crowdsource.save_response(id, res)
     return 'done'
 
+#---advanced viewer---
+@app.route('/advanced')
+def advanced_page():
+    return render_template('advanced_viewer.html')
+
+@app.route('/z_dict')
+def get_z_dict():
+    with open('/media/dylan/Elements/nbc/markov/1_1a_task1.json') as f:
+        z_dict = f.read()
+    return z_dict
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
