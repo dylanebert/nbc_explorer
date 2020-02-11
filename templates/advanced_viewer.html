@@ -104,13 +104,24 @@ function updateBuffer() {
     lastBufferUpdateStep = step
 }
 
+function setPlaying(value) {
+    playing = value
+    if(playing) {
+        $('#playButton i').removeClass('fa-play').addClass('fa-pause')
+    } else {
+        $('#playButton i').removeClass('fa-pause').addClass('fa-play')
+    }
+}
+
 function draw() {
     $('#player img').css('opacity', 0)
     images[step].css('opacity', 1)
     $('#stepDisplay').val(step)
     var progress = 100 * (step - startStep) / (endStep - startStep)
     $('#progressbar').css('width', progress + '%').attr('aria-valuenow', progress)
-    $('#z').text(zDict[step])
+    if(step in zDict) {
+        $('#z').text(zDict[step])
+    }
     if(Math.abs(step - lastBufferUpdateStep) > bufferThreshold / 2) {
         updateBuffer()
     }
@@ -118,13 +129,14 @@ function draw() {
         step += 3
         setTimeout(draw, 30)
     } else {
-        playing = false
+        setPlaying(false)
     }
 }
 
 $('#stepDisplay').change(function() {
     playing = false
     var temp = parseInt($('#stepDisplay').val())
+    temp = temp - temp % 3
     if(temp < startStep) {
         temp = startStep
     } else if(temp >= endStep) {
@@ -136,16 +148,14 @@ $('#stepDisplay').change(function() {
 
 $('#playButton').click(function() {
     if(!playing) {
-        $('#playButton i').removeClass('fa-play').addClass('fa-pause')
         if(step >= endStep - 3) {
             console.log(step)
             step = startStep
         }
-        playing = true
+        setPlaying(true)
         draw()
     } else {
-        $('#playButton i').removeClass('fa-pause').addClass('fa-play')
-        playing = false
+        setPlaying(false)
     }
 })
 
@@ -204,6 +214,7 @@ function preload() {
 $(document).ready(function() {
     $.getJSON(origin + '/z_dict', function(res) {
         zDict = res
+        console.log(zDict)
     })
     preload()
     updateBuffer()
