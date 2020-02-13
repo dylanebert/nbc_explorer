@@ -77,6 +77,7 @@
 var origin = window.location.origin
 dir = 'https://storage.googleapis.com/nbc_release/1_1a/1_1a_task1/'
 var zDict = {}
+var zLookup = {}
 var images = {}
 const startStep = 11808
 //const endStep = 12108
@@ -84,9 +85,9 @@ const endStep = 21030
 var step = startStep
 var playing = false
 var lastBufferUpdateStep
-var numStates = 0;
+var numStates = 0
 var stateColors = ["rgb(120,185,143)", "rgb(200,3,150)", "rgb(68,242,112)", "rgb(111,43,110)", "rgb(157,216,78)", "rgb(100,57,229)", "rgb(251,209,39)", "rgb(48,72,102)", "rgb(253,156,186)", "rgb(21,122,72)", "rgb(229,39,64)", "rgb(20,186,225)", "rgb(130,37,42)", "rgb(175,198,254)", "rgb(71,74,9)", "rgb(172,139,248)", "rgb(237,130,32)", "rgb(57,134,218)", "rgb(233,210,156)", "rgb(254,116,254)"]
-
+var fixState = -1
 var imageBuffer = []
 const bufferThreshold = 60
 
@@ -142,11 +143,44 @@ function draw() {
     if(Math.abs(step - lastBufferUpdateStep) > bufferThreshold / 2) {
         updateBuffer()
     }
-    if (step <= endStep - 3 & playing) {
-        step += 3
+    if(playing) {
+        incrementStep(3)
         setTimeout(draw, 30)
-    } else {
-        setPlaying(false)
+    }
+}
+
+function incrementStep(increment) {
+    step += increment
+    if(step < startStep) {
+        step = startStep;
+    }
+    if(step > endStep) {
+        step = startStep;
+    }
+    if(fixState != -1) {
+        validateStep()
+    }
+}
+
+function validateStep() {
+    var inInterval = false
+    var intervals = zLookup[fixState]
+    for(i = 0; i < intervals.length; i++) {
+        if(step >= intervals[i][0] && step < intervals[i][1]) {
+            inInterval = true
+        }
+    }
+    if(!inInterval) {
+        for(i = 0; i < intervals.length; i++) {
+            if(step < intervals[i][1]) {
+                step = intervals[i][0]
+                inInterval = true
+                break
+            }
+        }
+    }
+    if(!inInterval) {
+        step = intervals[0][0]
     }
 }
 
@@ -174,9 +208,6 @@ $('#stepDisplay').change(function() {
 
 $('#playButton').click(function() {
     if(!playing) {
-        if(step >= endStep - 3) {
-            step = startStep
-        }
         setPlaying(true)
         draw()
     } else {
@@ -185,37 +216,28 @@ $('#playButton').click(function() {
 })
 
 $('#fastBackButton').click(function() {
-    step -= 90
-    if(step < startStep) {
-        step = startStep
-    }
+    incrementStep(-90)
     if(!playing) {
         draw()
     }
 })
 
 $('#stepBackButton').click(function() {
-    step -= 3
-    if(step < startStep) {
-        step = startStep
-    }
+    incrementStep(-3)
     if(!playing) {
         draw()
     }
 })
 
 $('#stepForwardButton').click(function() {
-    step += 3
-    if(step >= endStep) {
-        step = endStep - 3
-    }
+    incrementStep(3)
     if(!playing) {
         draw()
     }
 })
 
 $('#fastForwardButton').click(function() {
-    step += 90
+    incrementStep(90)
     if(step >= endStep) {
         step = endStep - 3
     }
@@ -254,16 +276,19 @@ function drawStates() {
         var xPos = parseInt(960 * startPercent)
         var xWidth = parseInt(960 * (endPercent - startPercent))
         let bar = `
-            <rect x="` + xPos + `" y="0" width="` + xWidth + `" height="16"
-                style="fill:` + stateColors[z % stateColors.length] + `;" />
+            <rect data-cp="` + startPoint + `" class="zBar"
+                x="` + xPos + `" y="0" width="` + xWidth + `"
+                height="16" style="fill:` + stateColors[z % stateColors.length] + `;" />
         `
         svg += bar
     }
 
     var prev_cp = 0
-    var prev_z = 0
+    var prev_z = -1
     $.each(zDict, function(cp, z) {
-        addBar(prev_cp, cp, prev_z)
+        if(prev_z != -1) {
+            addBar(prev_cp, cp, prev_z)
+        }
         prev_cp = cp
         prev_z = z
     })
@@ -272,7 +297,17 @@ function drawStates() {
     $('#stateBar').append(svg)
 
     $('.state').click(function() {
-        console.log($(this).data('value'))
+        var val = $(this).data('value')
+        if(fixState == val) {
+            fixState = -1
+            $('.state').css('opacity', 1)
+        } else {
+            fixState = val
+            $('.state').css('opacity', .3)
+            $('#state' + val).css('opacity', 1)
+            validateStep()
+            draw()
+        }
     })
 }
 
@@ -281,12 +316,27 @@ $(document).ready(function() {
         zDict = res
         console.log(zDict)
 
+        var changepoints = []
         $.each(zDict, function(k, v) {
+            changepoints.push(parseInt(k))
+        })
+        var i = 0
+        $.each(zDict, function(k, v) {
+            if(!(v in zLookup)) {
+                zLookup[v] = []
+            }
+            if(i < changepoints.length - 1) {
+                zLookup[v].push([parseInt(k), changepoints[i+1]])
+            } else {
+                zLookup[v].push([parseInt(k), endStep])
+            }
             if(parseInt(v) + 1 > numStates) {
                 numStates = parseInt(v) + 1
             }
+            i += 1
         })
-        
+        console.log(zLookup)
+
         preload()
         updateBuffer()
         drawStates()
