@@ -32,6 +32,10 @@
     width: 100%;
     height: 100%;
 }
+#stateDisplay {
+    margin-top: 20px;
+    max-width: 960px;
+}
 </style>
 <body>
 <div class="container">
@@ -42,6 +46,7 @@
     <div class="progress">
         <div id="progressbar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
+    <div id="stateBar"></div>
     <div class="btn-toolbar" role="toolbar">
         <div class="btn-group mr-3" role="group">
             <button type="button" class="btn btn-default" id="playButton">
@@ -63,12 +68,12 @@
             </button>
         </div>
     </div>
-    <h2 id="z"></h2>
+    <h2 id="z">?</h2>
+    <div id="stateDisplay"></div>
 </div>
 </body>
 <script type="text/javascript" src="../static/jquery.imgplay.min.js"></script>
 <script>
-
 var origin = window.location.origin
 dir = 'https://storage.googleapis.com/nbc_release/1_1a/1_1a_task1/'
 var zDict = {}
@@ -79,6 +84,8 @@ const endStep = 21030
 var step = startStep
 var playing = false
 var lastBufferUpdateStep
+var numStates = 0;
+var stateColors = ["rgb(120,185,143)", "rgb(200,3,150)", "rgb(68,242,112)", "rgb(111,43,110)", "rgb(157,216,78)", "rgb(100,57,229)", "rgb(251,209,39)", "rgb(48,72,102)", "rgb(253,156,186)", "rgb(21,122,72)", "rgb(229,39,64)", "rgb(20,186,225)", "rgb(130,37,42)", "rgb(175,198,254)", "rgb(71,74,9)", "rgb(172,139,248)", "rgb(237,130,32)", "rgb(57,134,218)", "rgb(233,210,156)", "rgb(254,116,254)"]
 
 var imageBuffer = []
 const bufferThreshold = 60
@@ -113,15 +120,25 @@ function setPlaying(value) {
     }
 }
 
+function get_z(step) {
+    if(step in zDict) {
+        return zDict[step]
+    } else {
+        var temp = step - step % 3
+        while(!(temp in zDict) && temp > startStep) {
+            temp -= 3
+        }
+        return zDict[temp]
+    }
+}
+
 function draw() {
     $('#player img').css('opacity', 0)
     images[step].css('opacity', 1)
     $('#stepDisplay').val(step)
     var progress = 100 * (step - startStep) / (endStep - startStep)
     $('#progressbar').css('width', progress + '%').attr('aria-valuenow', progress)
-    if(step in zDict) {
-        $('#z').text(zDict[step])
-    }
+    $('#z').text(get_z(step))
     if(Math.abs(step - lastBufferUpdateStep) > bufferThreshold / 2) {
         updateBuffer()
     }
@@ -132,6 +149,15 @@ function draw() {
         setPlaying(false)
     }
 }
+
+$('.progress').click(function(e) {
+    var min = $(this).offset().left
+    var max = min + $(this).width()
+    var percent = (e.pageX - min) / (max - min)
+    step = parseInt(startStep + (endStep - startStep) * percent)
+    step = step - step % 3
+    draw()
+});
 
 $('#stepDisplay').change(function() {
     playing = false
@@ -149,7 +175,6 @@ $('#stepDisplay').change(function() {
 $('#playButton').click(function() {
     if(!playing) {
         if(step >= endStep - 3) {
-            console.log(step)
             step = startStep
         }
         setPlaying(true)
@@ -211,14 +236,62 @@ function preload() {
     }
 }
 
+function drawStates() {
+    for(i = 0; i < numStates; i++) {
+        let circle = `
+            <svg height="80" width="80" class="state" id="state` + i + `" data-value="` + i + `">
+                <circle cx="40" cy="40" r="30" fill="` + stateColors[i % stateColors.length] + `" />
+                <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" style="font-size: 24px;">` + i + `</text>
+            </svg>
+        `
+        $('#stateDisplay').append(circle)
+    }
+
+    let svg = '<svg width="960" height="16">'
+    function addBar(startPoint, endPoint, z) {
+        var startPercent = (startPoint - startStep) / (endStep - startStep)
+        var endPercent = (endPoint - startStep) / (endStep - startStep)
+        var xPos = parseInt(960 * startPercent)
+        var xWidth = parseInt(960 * (endPercent - startPercent))
+        let bar = `
+            <rect x="` + xPos + `" y="0" width="` + xWidth + `" height="16"
+                style="fill:` + stateColors[z % stateColors.length] + `;" />
+        `
+        svg += bar
+    }
+
+    var prev_cp = 0
+    var prev_z = 0
+    $.each(zDict, function(cp, z) {
+        addBar(prev_cp, cp, prev_z)
+        prev_cp = cp
+        prev_z = z
+    })
+    addBar(prev_cp, endStep, prev_z)
+    svg += '</svg>'
+    $('#stateBar').append(svg)
+
+    $('.state').click(function() {
+        console.log($(this).data('value'))
+    })
+}
+
 $(document).ready(function() {
     $.getJSON(origin + '/z_dict', function(res) {
         zDict = res
         console.log(zDict)
+
+        $.each(zDict, function(k, v) {
+            if(parseInt(v) + 1 > numStates) {
+                numStates = parseInt(v) + 1
+            }
+        })
+        
+        preload()
+        updateBuffer()
+        drawStates()
+        draw()
     })
-    preload()
-    updateBuffer()
-    draw()
 })
 </script>
 </html>
