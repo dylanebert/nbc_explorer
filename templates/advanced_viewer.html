@@ -124,9 +124,9 @@ function get_z(step) {
     if(step in zDict) {
         return zDict[step]
     } else {
-        var temp = step
+        var temp = step - step % 3
         while(!(temp in zDict) && temp > startStep) {
-            temp -= 1
+            temp -= 3
         }
         return zDict[temp]
     }
@@ -188,12 +188,14 @@ $('.progress').click(function(e) {
     var max = min + $(this).width()
     var percent = (e.pageX - min) / (max - min)
     step = parseInt(startStep + (endStep - startStep) * percent)
+    step = step - step % 3
     draw()
 });
 
 $('#stepDisplay').change(function() {
     playing = false
     var temp = parseInt($('#stepDisplay').val())
+    temp = temp - temp % 3
     if(temp < startStep) {
         temp = startStep
     } else if(temp >= endStep) {
@@ -284,11 +286,9 @@ function drawStates() {
     var prev_z = -1
     $.each(zDict, function(cp, z) {
         if(prev_z != -1) {
-            if(z != prev_z) {
-                addBar(prev_cp, cp, prev_z)
-                prev_cp = cp
-            }
+            addBar(prev_cp, cp, prev_z)
         }
+        prev_cp = cp
         prev_z = z
     })
     addBar(prev_cp, endStep, prev_z)
