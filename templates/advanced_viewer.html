@@ -258,7 +258,7 @@ function preload() {
 }
 
 function drawStates() {
-    for(i = 0; i < numStates; i++) {
+    for(i = 1; i < numStates; i++) {
         let circle = `
             <svg height="80" width="80" class="state" id="state` + i + `" data-value="` + i + `">
                 <circle cx="40" cy="40" r="30" fill="` + stateColors[i % stateColors.length] + `" />
