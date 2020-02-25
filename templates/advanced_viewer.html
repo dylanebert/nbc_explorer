@@ -80,7 +80,7 @@ var zDict = {}
 var zLookup = {}
 var images = {}
 const startStep = 11808
-const endStep = 21030
+const endStep = 21024
 var step = startStep
 var playing = false
 var lastBufferUpdateStep
@@ -88,7 +88,7 @@ var numStates = 0
 var stateColors = ["rgb(120,185,143)", "rgb(200,3,150)", "rgb(68,242,112)", "rgb(111,43,110)", "rgb(157,216,78)", "rgb(100,57,229)", "rgb(251,209,39)", "rgb(48,72,102)", "rgb(253,156,186)", "rgb(21,122,72)", "rgb(229,39,64)", "rgb(20,186,225)", "rgb(130,37,42)", "rgb(175,198,254)", "rgb(71,74,9)", "rgb(172,139,248)", "rgb(237,130,32)", "rgb(57,134,218)", "rgb(233,210,156)", "rgb(254,116,254)"]
 var fixState = -1
 var imageBuffer = []
-const bufferThreshold = 60
+const bufferThreshold = 90
 
 function updateBuffer() {
     while(imageBuffer.length > 0) {
@@ -98,7 +98,7 @@ function updateBuffer() {
             img.removeAttr('src')
         }
     }
-    for(i = step - bufferThreshold; i < step + bufferThreshold; i += 3) {
+    for(i = step - bufferThreshold; i < step + bufferThreshold; i += 9) {
         if(i in images) {
             var img = images[i]
             if(img.data('src')) {
@@ -124,9 +124,9 @@ function get_z(step) {
     if(step in zDict) {
         return zDict[step]
     } else {
-        var temp = step - step % 3
+        var temp = step - step % 9
         while(!(temp in zDict) && temp > startStep) {
-            temp -= 3
+            temp -= 9
         }
         return zDict[temp]
     }
@@ -143,8 +143,8 @@ function draw() {
         updateBuffer()
     }
     if(playing) {
-        incrementStep(3)
-        setTimeout(draw, 30)
+        incrementStep(9)
+        setTimeout(draw, 100)
     }
 }
 
@@ -188,14 +188,14 @@ $('.progress').click(function(e) {
     var max = min + $(this).width()
     var percent = (e.pageX - min) / (max - min)
     step = parseInt(startStep + (endStep - startStep) * percent)
-    step = step - step % 3
+    step = step - step % 9
     draw()
 });
 
 $('#stepDisplay').change(function() {
     playing = false
     var temp = parseInt($('#stepDisplay').val())
-    temp = temp - temp % 3
+    temp = temp - temp % 9
     if(temp < startStep) {
         temp = startStep
     } else if(temp >= endStep) {
@@ -222,14 +222,14 @@ $('#fastBackButton').click(function() {
 })
 
 $('#stepBackButton').click(function() {
-    incrementStep(-3)
+    incrementStep(-9)
     if(!playing) {
         draw()
     }
 })
 
 $('#stepForwardButton').click(function() {
-    incrementStep(3)
+    incrementStep(9)
     if(!playing) {
         draw()
     }
@@ -238,7 +238,7 @@ $('#stepForwardButton').click(function() {
 $('#fastForwardButton').click(function() {
     incrementStep(90)
     if(step >= endStep) {
-        step = endStep - 3
+        step = endStep - 9
     }
     if(!playing) {
         draw()
@@ -246,7 +246,7 @@ $('#fastForwardButton').click(function() {
 })
 
 function preload() {
-    for(i = startStep; i <= endStep; i += 3) {
+    for(i = startStep; i <= endStep; i += 9) {
         let path = dir + i + '.png'
         var img = $('<img>')
         img.attr('data-src', path)
