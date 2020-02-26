@@ -65,8 +65,8 @@ def advanced_page():
 
 @app.route('/z_dict')
 def get_z_dict():
-    with open('static/1_1a_task1.json') as f:
-    #with open('/media/dylan/Elements/nbc/markov_outputs/niekum/1_1a_task1.json') as f:
+    #with open('static/1_1a_task1.json') as f:
+    with open('/media/dylan/Elements/nbc/markov_outputs/niekum/1_1a_task1.json') as f:
         z_dict = f.read()
     return z_dict
 
