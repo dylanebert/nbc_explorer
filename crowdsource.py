@@ -3,15 +3,16 @@ from google.cloud import datastore
 import random
 from datetime import datetime
 import pandas as pd
+import matplotlib.pyplot as plt
 
 client = datastore.Client()
 
 def find_id():
-    methods = ['matching', 'single_trajectories', 'pixelwise', 'conv_transform_absolute', 'svd3', 'random']
+    methods = ['aligned', 'match_end', 'match_end_arbitrary', 'random']
     random.shuffle(methods)
     for method in methods:
-        query = client.query(kind='entity')
-        query.add_filter('n_res', '=', 2)
+        query = client.query(kind='segment')
+        query.add_filter('n_res', '=', 0)
         query.add_filter('method', '=', method)
         results = list(query.fetch())
         if len(results) > 0:
@@ -21,19 +22,16 @@ def find_id():
     return None
 
 def get_entity(id):
-    key = client.key('entity', int(id))
+    key = client.key('segment', int(id))
     entity = client.get(key)
     return entity
 
 def delete_entity(id):
     clear_responses(id)
-    key = client.key('entity', int(id))
+    key = client.key('segment', int(id))
     client.delete(key)
 
 def save_response(id, val):
-    print('Saving disabled')
-    return
-
     entity = get_entity(id)
     if entity is None:
         return entity
@@ -45,12 +43,9 @@ def save_response(id, val):
     key_id = hash('{},{}'.format(id, date))
     key = client.key('response', key_id)
     res = datastore.Entity(key)
-    res['eid'] = id
+    res['eid'] = int(id)
     res['date'] = date
-    k = 1
-    for q in val:
-        res['q{}'.format(k)] = q
-        k += 1
+    res['q'] = val
     client.put(res)
     print('Saved {}: {}'.format(id, val))
 
@@ -60,10 +55,11 @@ def delete_response(id):
     eid = response['eid']
     client.delete(key)
 
-    key = client.key('entity', int(eid))
+    key = client.key('segment', int(eid))
     entity = client.get(key)
-    entity['n_res'] -= 1
-    client.put(entity)
+    if entity is not None:
+        entity['n_res'] -= 1
+        client.put(entity)
 
 def clear_responses(eid):
     query = client.query(kind='response')
@@ -79,13 +75,13 @@ def clear_all_responses():
         delete_response(result.key.id)
 
 def clear_entities():
-    query = client.query(kind='entity')
+    query = client.query(kind='segment')
     results = list(query.fetch())
     for result in tqdm(results):
         delete_entity(result.key.id)
 
 def recount():
-    query = client.query(kind='entity')
+    query = client.query(kind='segment')
     entities = list(query.fetch())
     for entity in tqdm(entities):
         res_query = client.query(kind='response')
@@ -101,38 +97,62 @@ def get_all_responses():
     results = list(query.fetch())
     return results
 
-def summarize():
+def get_report():
     responses = get_all_responses()
-    phrases = pd.read_json('/media/dylan/Elements/nbc/phrases_old.json', orient='index')
     report = []
     for response in responses:
         entity = get_entity(response['eid'])
         if entity is None:
             continue
-        query = phrases.loc[entity['qid']]
-        phrase = phrases.loc[entity['pid']]
         row = {
-            'eid': response['eid'],
             'method': entity['method'],
-            'q1': -response['q1'] + 2,
-            'q2': -response['q2'] + 2,
-            'q3': -response['q3'] + 2,
-            'query': query,
-            'phrase': phrase
+            'q': response['q'],
+            'verb': entity['verb'],
+            'hmm': entity['hmm']
         }
         report.append(row)
     report = pd.DataFrame(report)
     report.to_json('/media/dylan/Elements/nbc/report.json', orient='index')
 
-    '''agreed = 0; sum = 0
-    for _, group in report.groupby('eid'):
-        if len(group) > 1:
-            for key in ['q1', 'q2', 'q3']:
-                if group.iloc[0][key] == group.iloc[1][key]:
-                    agreed += 1
-                sum += 1
-    print(agreed / float(sum))
-    print(report.groupby('method').mean()[['q1', 'q2', 'q3']])'''
+def plot_methods():
+    report = pd.read_json('/media/dylan/Elements/nbc/report.json', orient='index')
+    ax = plt.subplot(111)
+    colors = ['g', 'r', 'y']
+    xticks = []
+    groups = report.groupby(['method', 'hmm'])
+    for i, ([method, hmm], rows) in enumerate(groups):
+        counts = {1: 0, 2: 0, 3: 0}
+        for q, count in rows['q'].value_counts().iteritems():
+            counts[q] = count
+        label = '{} : {}'.format(method, hmm)
+        xticks.append(label)
+        for j in range(3):
+            x = i + .2 * (j - 1)
+            y = counts[j + 1]
+            ax.bar(x, y, width=.2, color=colors[j % 3], align='center')
+    plt.xticks(range(len(groups)), xticks, rotation=90)
+    plt.tight_layout()
+    plt.show()
+
+def plot_methods_concise():
+    report = pd.read_json('/media/dylan/Elements/nbc/report.json', orient='index')
+    ax = plt.subplot(111)
+    xticks = []
+    groups = report.groupby(['method', 'hmm'])
+    for i, ([method, hmm], rows) in enumerate(groups):
+        value = 0
+        map = {1: 1, 2: 0, 3: .5}
+        for q, count in rows['q'].value_counts().iteritems():
+            value += map[q] * count
+        value /= len(rows)
+        label = '{} : {}'.format(method, hmm)
+        xticks.append(label)
+        ax.bar(i, value)
+    plt.xticks(range(len(groups)), xticks, rotation=90)
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == '__main__':
-    summarize()
+    #plot_methods()
+    plot_methods_concise()
+    pass
