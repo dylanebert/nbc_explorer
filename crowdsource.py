@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 client = datastore.Client()
 
 def find_id():
-    methods = ['aligned', 'match_end', 'match_end_arbitrary', 'random']
+    methods = ['aligned', 'match_end', 'match_end_arbitrary', 'random', 'random_aligned']
     random.shuffle(methods)
     for method in methods:
         query = client.query(kind='segment')
@@ -117,42 +117,69 @@ def get_report():
 def plot_methods():
     report = pd.read_json('/media/dylan/Elements/nbc/report.json', orient='index')
     ax = plt.subplot(111)
-    colors = ['g', 'r', 'y']
-    xticks = []
-    groups = report.groupby(['method', 'hmm'])
-    for i, ([method, hmm], rows) in enumerate(groups):
-        counts = {1: 0, 2: 0, 3: 0}
-        for q, count in rows['q'].value_counts().iteritems():
-            counts[q] = count
-        label = '{} : {}'.format(method, hmm)
-        xticks.append(label)
-        for j in range(3):
-            x = i + .2 * (j - 1)
-            y = counts[j + 1]
-            ax.bar(x, y, width=.2, color=colors[j % 3], align='center')
-    plt.xticks(range(len(groups)), xticks, rotation=90)
+    colors = ['g', 'y', 'r']
+    x_pos_major = []
+    x_ticks_major = []
+    x_pos_minor = []
+    x_ticks_minor = []
+    i = 0
+    for method in ['aligned', 'random_aligned', 'match_end', 'match_end_arbitrary', 'random']:
+        j = 0
+        for hmm in ['niekum1', 'niekum2', 'niekum3', 'niekum_relative1']:
+            rows = report[(report['method'] == method) & (report['hmm'] == hmm)]
+            map_q = [0, 1, 3, 2]
+            counts = {1: 0, 2: 0, 3: 0}
+            sum = 0
+            for q, count in rows['q'].value_counts().iteritems():
+                counts[map_q[q]] = count
+                sum += count
+            for k in [1, 2, 3]:
+                counts[k] /= sum
+            x_pos_minor.append(i * 5 + j)
+            x_ticks_minor.append(hmm)
+            for k in range(3):
+                x = i * 5 + j + .2 * (k - 1)
+                y = counts[k + 1]
+                ax.bar(x, y, width=.2, color=colors[k % 3], align='center')
+            j += 1
+        x_pos_major.append(i * 5 + 1.5)
+        x_ticks_major.append(method)
+        i += 1
+    plt.xticks(x_pos_major, x_ticks_major, rotation=90)
+    #plt.xticks(x_pos_minor, x_ticks_minor, rotation=90)
     plt.tight_layout()
     plt.show()
 
 def plot_methods_concise():
     report = pd.read_json('/media/dylan/Elements/nbc/report.json', orient='index')
     ax = plt.subplot(111)
-    xticks = []
-    groups = report.groupby(['method', 'hmm'])
-    for i, ([method, hmm], rows) in enumerate(groups):
-        value = 0
-        map = {1: 1, 2: 0, 3: .5}
-        for q, count in rows['q'].value_counts().iteritems():
-            value += map[q] * count
-        value /= len(rows)
-        label = '{} : {}'.format(method, hmm)
-        xticks.append(label)
-        ax.bar(i, value)
-    plt.xticks(range(len(groups)), xticks, rotation=90)
+    x_pos = []
+    x_ticks = []
+    i = 0
+    for method in ['aligned', 'match_end', 'match_end_arbitrary', 'random']:
+        j = 0
+        for hmm in ['niekum1', 'niekum2', 'niekum3', 'niekum_relative1']:
+            rows = report[(report['method'] == method) & (report['hmm'] == hmm)]
+            value = 0
+            map = {1: 1, 2: 0, 3: .5}
+            for q, count in rows['q'].value_counts().iteritems():
+                value += map[q] * count
+            value /= len(rows)
+            label = '{} : {}'.format(method, hmm)
+            x = i * 5 + j
+            ax.bar(x, value)
+            j += 1
+        x_pos.append(i * 5 + 1.5)
+        x_ticks.append(method)
+        i += 1
+    plt.xticks(x_pos, x_ticks, rotation=90)
     plt.tight_layout()
     plt.show()
 
 if __name__ == '__main__':
+    #get_report()
+    report = pd.read_json('/media/dylan/Elements/nbc/report.json', orient='index')
+    print(len(report))
     #plot_methods()
-    plot_methods_concise()
+    #plot_methods_concise()
     pass
