@@ -3,7 +3,6 @@ from google.cloud import datastore
 import random
 from datetime import datetime
 import pandas as pd
-import matplotlib.pyplot as plt
 
 client = datastore.Client()
 
@@ -115,6 +114,7 @@ def get_report():
     report.to_json('/media/dylan/Elements/nbc/report.json', orient='index')
 
 def plot_methods():
+    import matplotlib.pyplot as plt
     report = pd.read_json('/media/dylan/Elements/nbc/report.json', orient='index')
     ax = plt.subplot(111)
     colors = ['g', 'y', 'r']
@@ -123,9 +123,9 @@ def plot_methods():
     x_pos_minor = []
     x_ticks_minor = []
     i = 0
-    for method in ['aligned', 'random_aligned', 'match_end', 'match_end_arbitrary', 'random']:
+    for method in ['word_given_action', 'action_given_word', 'word_given_action_normalized', 'action_given_word_normalized']:
         j = 0
-        for hmm in ['niekum1', 'niekum2', 'niekum3', 'niekum_relative1']:
+        for hmm in ['final']:
             rows = report[(report['method'] == method) & (report['hmm'] == hmm)]
             map_q = [0, 1, 3, 2]
             counts = {1: 0, 2: 0, 3: 0}
@@ -135,14 +135,14 @@ def plot_methods():
                 sum += count
             for k in [1, 2, 3]:
                 counts[k] /= sum
-            x_pos_minor.append(i * 5 + j)
+            x_pos_minor.append(i)
             x_ticks_minor.append(hmm)
             for k in range(3):
-                x = i * 5 + j + .2 * (k - 1)
+                x = i + .2 * (k - 1)
                 y = counts[k + 1]
                 ax.bar(x, y, width=.2, color=colors[k % 3], align='center')
             j += 1
-        x_pos_major.append(i * 5 + 1.5)
+        x_pos_major.append(i)
         x_ticks_major.append(method)
         i += 1
     plt.xticks(x_pos_major, x_ticks_major, rotation=90)
@@ -151,14 +151,14 @@ def plot_methods():
     plt.show()
 
 def plot_methods_concise():
+    import matplotlib.pyplot as plt
     report = pd.read_json('/media/dylan/Elements/nbc/report.json', orient='index')
     ax = plt.subplot(111)
     x_pos = []
     x_ticks = []
     i = 0
-    for method in ['aligned', 'match_end', 'match_end_arbitrary', 'random']:
-        j = 0
-        for hmm in ['niekum1', 'niekum2', 'niekum3', 'niekum_relative1']:
+    for method in ['word_given_action', 'action_given_word', 'word_given_action_normalized', 'action_given_word_normalized']:
+        for hmm in ['final']:
             rows = report[(report['method'] == method) & (report['hmm'] == hmm)]
             value = 0
             map = {1: 1, 2: 0, 3: .5}
@@ -166,10 +166,9 @@ def plot_methods_concise():
                 value += map[q] * count
             value /= len(rows)
             label = '{} : {}'.format(method, hmm)
-            x = i * 5 + j
+            x = i
             ax.bar(x, value)
-            j += 1
-        x_pos.append(i * 5 + 1.5)
+        x_pos.append(i)
         x_ticks.append(method)
         i += 1
     plt.xticks(x_pos, x_ticks, rotation=90)
@@ -179,7 +178,10 @@ def plot_methods_concise():
 if __name__ == '__main__':
     #get_report()
     report = pd.read_json('/media/dylan/Elements/nbc/report.json', orient='index')
-    print(report[report['method'] == 'random_aligned']['hmm'].value_counts())
+    report = report[report['hmm'] == 'final']
+    for method, group in report.groupby('method'):
+        for verb, rows in group.groupby('verb'):
+            print(method, verb, len(rows[rows['q'] == 1]))
     #plot_methods()
     #plot_methods_concise()
     pass
