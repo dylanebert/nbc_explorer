@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 client = datastore.Client()
 
 def find_id():
-    methods = ['aligned', 'match_end', 'match_end_arbitrary', 'random', 'random_aligned']
+    methods = ['action_given_word', 'word_given_action', 'action_given_word_normalized', 'word_given_action_normalized']
     random.shuffle(methods)
     for method in methods:
         query = client.query(kind='segment')
@@ -179,7 +179,7 @@ def plot_methods_concise():
 if __name__ == '__main__':
     #get_report()
     report = pd.read_json('/media/dylan/Elements/nbc/report.json', orient='index')
-    print(len(report))
+    print(report[report['method'] == 'random_aligned']['hmm'].value_counts())
     #plot_methods()
     #plot_methods_concise()
     pass
