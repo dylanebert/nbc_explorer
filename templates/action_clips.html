@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>NBC Event Viewer</title>
+    <title>Case Evaluation</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -17,74 +17,35 @@
     width: 960px;
     height: 540px;
 }
-#playerWrapper {
-    margin-top: 50px;
-}
 </style>
 <body>
 <div class="container">
-    <h1>NBC Event Viewer</h1>
-    <form class="form playForm">
+    <h1 id="action"></h1>
+    <p id="shiftaction"></p>
+    <h5 id="phrase"></h5>
+    <p id="shifttxt">0</p>
+    <div id="playerWrapper">
+        <div id="player" class="imageplayer"></div>
+    </div>
+    <button class="btn btn-secondary" id="backshift">Backshift</button>
+    <button class="btn btn-secondary" id="forwardshift">Forwardshift</button>
+    <form>
         <div class="form-group">
-            <div class="form-row">
-                <div class="col">
-                    <label for="participantDropdown">Participant A</label>
-                    <select class="form-control mb-2 mr-sm-2" id="participantDropdown">
-                        <option selected>1_1a</option>
-                        <option>2_2a</option>
-                        <option>3_1b</option>
-                        <option>4_2b</option>
-                        <option>5_1c</option>
-                        <option>6_2c</option>
-                        <option>7_1a</option>
-                        <option>8_2a</option>
-                        <option>9_1b</option>
-                        <option>10_2b</option>
-                        <option>11_1c</option>
-                        <option>12_2c</option>
-                        <option>13_1a</option>
-                        <option>14_2a</option>
-                        <option>15_1b</option>
-                        <option>16_2b</option>
-                        <option>17_1c</option>
-                        <option>18_2c</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <label for="taskDropdown">Task A</label>
-                    <select class="form-control mb-2 mr-sm-2" id="taskDropdown">
-                        <option selected>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="col">
-                    <label for="startStepInput">A: Start Step</label>
-                    <input id="startStepInput" type="number" class="form-control" value="11807">
-                </div>
-                <div class="col">
-                    <label for="endStepInput">A: End Step</label>
-                    <input id="endStepInput" type="number" class="form-control" value="12525">
-                </div>
-            </div>
+            <input type="text" class="form-text" id="annotation">
         </div>
-        <button type="submit" class="btn btn-secondary">View</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
-    <div id="playerWrapper"></div>
 </div>
 </body>
 <script type="text/javascript" src="../static/jquery.imgplay.min.js"></script>
 <script>
-function play() {
-    let participant = $('#participantDropdown').val()
-    let task = $('#taskDropdown').val()
-    let startStep = parseInt($('#startStepInput').val())
-    let endStep = parseInt($('#endStepInput').val())
+var origin = window.location.origin
+var action_idx = 0
+var shift = 0
+var clip_i = 0
+
+function play(participant, task, startStep, endStep) {
+    $('#playerWrapper').html(`<div id="player" class="imageplayer"></div>`)
     for(i = startStep; i < endStep; i += 3) {
         let line = `<img src="https://storage.googleapis.com/nbc_release/` + participant + `/` + participant + `_task` + task + `/` + i + `.png" />`
         $('#player').append(line)
@@ -92,14 +53,46 @@ function play() {
     $('#player').imgplay({rate: 30}).data('imgplay').play()
 }
 
+function playshift() {
+    $('#shifttxt').text(shift)
+    $.getJSON(origin + '/shift?idx=' + action_idx + '&shift=' + shift, function(res) {
+        $('#shiftaction').text(res['z'])
+        console.log(res['start_step'], res['end_step'])
+        play(res['participant'], res['task'], res['start_step'], res['end_step'])
+    });
+}
+
 $(document).ready(function() {
-    $('#startStepInput').change(function() {
-        $('#endStepInput').val(parseInt($(this).val()) + 64)
-    })
-    $('.playForm').submit(function(e) {
+    var url_string = window.location.href
+	var url = new URL(url_string)
+	clip_i = parseInt(url.searchParams.get('i'))
+    $.getJSON(origin + '/get_pick?i=' + clip_i, function(res) {
+        console.log(res['action_start_step'], res['action_end_step'])
+        let participant = res['participant']
+        let task = res['task']
+        let startStep = res['action_start_step']
+        let endStep = res['action_end_step']
+        action_idx = res['action_idx']
+        $('#action').text(res['action'])
+        $('#phrase').text(res['full_phrase'])
+        play(participant, task, startStep, endStep)
+    });
+
+    $('form').submit(function(e) {
         e.preventDefault()
-        $('#playerWrapper').html(`<div id="player" class="imageplayer"></div>`)
-        play()
+        var annotation = action_idx + ',' + $('#annotation').val()
+        $.get(origin + '/annotate?annotation=' + annotation)
+        clip_i += 1
+        window.location.href = origin + '/action_clips?i=' + clip_i
+    });
+
+    $('#backshift').click(function() {
+        shift -= 1
+        playshift()
+    });
+    $('#forwardshift').click(function() {
+        shift += 1
+        playshift()
     })
 })
 </script>

@@ -3,6 +3,7 @@ from flask_cors import CORS
 import explorer
 import crowdsource
 import json
+import action_clips
 
 app = Flask(__name__)
 CORS(app)
@@ -71,8 +72,32 @@ def get_z_dict():
     return z_dict
 
 @app.route('/sequence')
-def action_clips():
+def sequence_viewer():
     return render_template('sequence_viewer.html')
+
+@app.route('/action_clips')
+def actions():
+    return render_template('action_clips.html')
+
+@app.route('/get_pick')
+def get_pick():
+    i = int(request.args.get('i'))
+    action = action_clips.get_pick(i)
+    return action
+
+@app.route('/shift')
+def get_shift():
+    idx = int(request.args.get('idx'))
+    shift = int(request.args.get('shift'))
+    shifted = action_clips.shift(idx, shift)
+    return shifted
+
+@app.route('/annotate')
+def annotate():
+    annotation = request.args.get('annotation')
+    with open('D:/nbc/case/pick.txt', 'a+') as f:
+        f.write(annotation + '\n')
+    return 'done'
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)

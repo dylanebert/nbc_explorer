@@ -177,7 +177,7 @@ def plot_methods_concise():
 
 if __name__ == '__main__':
     #get_report()
-    report = pd.read_json('/media/dylan/Elements/nbc/report.json', orient='index')
+    report = pd.read_json('D:/nbc/report.json', orient='index')
     report = report[report['hmm'] == 'final']
     for method, group in report.groupby('method'):
         for verb, rows in group.groupby('verb'):
