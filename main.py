@@ -70,5 +70,9 @@ def get_z_dict():
         z_dict = f.read()
     return z_dict
 
+@app.route('/sequence')
+def action_clips():
+    return render_template('sequence_viewer.html')
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
