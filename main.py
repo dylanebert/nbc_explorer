@@ -3,27 +3,18 @@ from flask_cors import CORS
 import explorer
 import crowdsource
 import json
-import action_clips
 
 app = Flask(__name__)
 CORS(app)
 
 #---explorer---
-@app.route('/viewer')
-def index():
-    return render_template('index.html')
-
 @app.route('/')
 def viewer():
-    return render_template('phrase_viewer.html')
+    return render_template('legacy_phrase_viewer.html')
 
-@app.route('/get_phrases')
-def get_phrases():
-    return explorer.get_phrases()
-
-@app.route('/get_phrases_old')
-def get_phrases_old():
-    return explorer.get_phrases_old()
+@app.route('/get_legacy_phrases')
+def get_legacy_phrases():
+    return explorer.get_legacy_phrases()
 
 @app.route('/get_phrase')
 def get_phrase_data():
@@ -36,7 +27,7 @@ def get_questions():
     idx = int(request.args.get('idx'))
     return explorer.get_questions(idx)
 
-#---crowdsource---
+#---crowdsourcing---
 @app.route('/crowdsource')
 def crowdsource_page():
     return render_template('crowdsource.html')
@@ -59,6 +50,11 @@ def save_response():
     crowdsource.save_response(id, res)
     return 'done'
 
+#---sequence viewer---
+@app.route('/sequence')
+def sequence_viewer():
+    return render_template('sequence_viewer.html')
+
 #---advanced viewer---
 @app.route('/advanced')
 def advanced_page():
@@ -70,34 +66,6 @@ def get_z_dict():
     #with open('/media/dylan/Elements/nbc/markov_outputs/niekum2/1_1a_task1.json') as f:
         z_dict = f.read()
     return z_dict
-
-@app.route('/sequence')
-def sequence_viewer():
-    return render_template('sequence_viewer.html')
-
-@app.route('/action_clips')
-def actions():
-    return render_template('action_clips.html')
-
-@app.route('/get_pick')
-def get_pick():
-    i = int(request.args.get('i'))
-    action = action_clips.get_pick(i)
-    return action
-
-@app.route('/shift')
-def get_shift():
-    idx = int(request.args.get('idx'))
-    shift = int(request.args.get('shift'))
-    shifted = action_clips.shift(idx, shift)
-    return shifted
-
-@app.route('/annotate')
-def annotate():
-    annotation = request.args.get('annotation')
-    with open('D:/nbc/case/pick.txt', 'a+') as f:
-        f.write(annotation + '\n')
-    return 'done'
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)

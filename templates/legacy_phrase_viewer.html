@@ -140,7 +140,7 @@ function populate() {
 }
 
 $(document).ready(function() {
-    $.getJSON(origin + '/get_phrases_old', function(res) {
+    $.getJSON(origin + '/get_legacy_phrases', function(res) {
         phrases = res
         populate()
     })
