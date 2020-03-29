@@ -3,6 +3,7 @@ from flask_cors import CORS
 import explorer
 import crowdsource
 import json
+import action_sampling
 
 app = Flask(__name__)
 CORS(app)
@@ -66,6 +67,20 @@ def get_z_dict():
     #with open('/media/dylan/Elements/nbc/markov_outputs/niekum2/1_1a_task1.json') as f:
         z_dict = f.read()
     return z_dict
+
+#---action sampling---
+@app.route('/actions')
+def actions():
+    return render_template('action_sampling.html')
+
+@app.route('/actions_meta')
+def actions_meta():
+    return action_sampling.actions_meta()
+
+@app.route('/sample_action')
+def sample_action():
+    action = int(request.args.get('action'))
+    return action_sampling.sample_action(action)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
