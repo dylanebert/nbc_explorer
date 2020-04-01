@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import json
 
-actions = pd.read_json('D:/nbc/actions/1hz.json', orient='index')
+actions = pd.read_json('D:/nbc/actions/1hz_1r.json', orient='index')
 
 def actions_meta():
     return actions['z'].value_counts().to_json()

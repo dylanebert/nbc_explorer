@@ -24,6 +24,7 @@
         <select class="form-control" id="actionSelect">
             <option></option>
         </select>
+        <button type="button" class="btn btn-primary" id="refresh">Refresh</button>
     </form>
     <div class="row">
         <div class="col-sm-4" id="playerWrapper1"></div>
@@ -59,17 +60,20 @@ function sampleAction(action) {
     })
 }
 
+function sample() {
+    $('#actionSelect option:selected').each(function() {
+        sampleAction($(this).data('value'));
+    })
+}
+
 $(document).ready(function() {
     $.getJSON(origin + '/actions_meta', function(res) {
         $.each(res, function(action, count) {
             $('#actionSelect').append('<option data-value="' + action + '">' + action + ' (' + count + ')</option>')
         })
     });
-    $('#actionSelect').change(function() {
-        $('#actionSelect option:selected').each(function() {
-            sampleAction($(this).data('value'));
-        })
-    })
+    $('#actionSelect').change(sample);
+    $('#refresh').click(sample);
 })
 </script>
 </html>
