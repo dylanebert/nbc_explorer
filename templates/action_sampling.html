@@ -21,6 +21,20 @@
 <body>
 <div class="container">
     <form class="form-inline">
+        <label for="methodSelect">Method</label>
+        <select class="form-control" id="methodSelect">
+            <option></option>
+            <option>1hz_1r</option>
+            <option>1hz_2r</option>
+            <option>1hz_3r</option>
+            <option>5hz_1r</option>
+            <option>5hz_2r</option>
+            <option>5hz_3r</option>
+            <option>10hz_1r</option>
+            <option>10hz_2r</option>
+            <option>10hz_3r</option>
+        </select>
+        <label for="actionSelect">Action</label>
         <select class="form-control" id="actionSelect">
             <option></option>
         </select>
@@ -67,13 +81,21 @@ function sample() {
 }
 
 $(document).ready(function() {
-    $.getJSON(origin + '/actions_meta', function(res) {
-        $.each(res, function(action, count) {
-            $('#actionSelect').append('<option data-value="' + action + '">' + action + ' (' + count + ')</option>')
+    $('#methodSelect').change(function() {
+        $('#methodSelect option:selected').each(function() {
+            let method = $(this).text()
+            if(method != "") {
+                $('#actionSelect').html('<option></option>')
+                $.getJSON(origin + '/actions_meta?method=' + method, function(res) {
+                    $.each(res, function(action, count) {
+                        $('#actionSelect').append('<option data-value="' + action + '">' + action + ' (' + count + ')</option>')
+                    })
+                });
+                $('#actionSelect').change(sample);
+                $('#refresh').click(sample);
+            }
         })
     });
-    $('#actionSelect').change(sample);
-    $('#refresh').click(sample);
 })
 </script>
 </html>
