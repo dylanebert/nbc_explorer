@@ -75,8 +75,7 @@ def actions():
 
 @app.route('/actions_meta')
 def actions_meta():
-    method = request.args.get('method')
-    return action_sampling.actions_meta(method)
+    return action_sampling.actions_meta()
 
 @app.route('/sample_action')
 def sample_action():
