@@ -1,10 +1,14 @@
 import numpy as np
 import pandas as pd
 import json
+import os
 
-def actions_meta():
+def get_paths():
+    return json.dumps(os.listdir('static/states'))
+
+def get_actions(path):
     global actions
-    actions = pd.read_json('partial_states.json', orient='index')
+    actions = pd.read_json(os.path.join('static/states', path), orient='index')
     return actions['state'].value_counts().to_json()
 
 def sample_action(action):

@@ -64,7 +64,6 @@ def advanced_page():
 @app.route('/z_dict')
 def get_z_dict():
     with open('static/1_1a_task1.json') as f:
-    #with open('/media/dylan/Elements/nbc/markov_outputs/niekum2/1_1a_task1.json') as f:
         z_dict = f.read()
     return z_dict
 
@@ -75,7 +74,12 @@ def actions():
 
 @app.route('/actions_meta')
 def actions_meta():
-    return action_sampling.actions_meta()
+    return action_sampling.get_paths()
+
+@app.route('/states')
+def get_states():
+    path = request.args.get('path')
+    return action_sampling.get_actions(path)
 
 @app.route('/sample_action')
 def sample_action():

@@ -27,6 +27,10 @@
 <body>
 <div class="container">
     <form class="form-inline">
+        <label for="pathSelect">States</label>
+        <select class="form-control" id="pathSelect">
+            <option></option>
+        </select>
         <label for="actionSelect">Action</label>
         <select class="form-control" id="actionSelect">
             <option></option>
@@ -67,6 +71,17 @@ function sampleAction(action) {
     })
 }
 
+function select() {
+    $('#actionSelect').html('<option></option>')
+    $('#pathSelect option:selected').each(function() {
+        $.getJSON(origin + '/states?path=' + $(this).data('value'), function(res) {
+            $.each(res, function(action, count) {
+                $('#actionSelect').append('<option data-value="' + action + '">' + action + ' (' + count + ')</option>')
+            })
+        });
+    })
+}
+
 function sample() {
     $('#actionSelect option:selected').each(function() {
         sampleAction($(this).data('value'));
@@ -76,11 +91,11 @@ function sample() {
 $(document).ready(function() {
     $('#actionSelect').html('<option></option>')
     $.getJSON(origin + '/actions_meta', function(res) {
-        console.lo
-        $.each(res, function(action, count) {
-            $('#actionSelect').append('<option data-value="' + action + '">' + action + ' (' + count + ')</option>')
+        $.each(res, function(i, path) {
+            $('#pathSelect').append('<option data-value="' + path + '">' + path + '</option>')
         })
-    });
+    })
+    $('#pathSelect').change(select);
     $('#actionSelect').change(sample);
     $('#refresh').click(sample);
 })
