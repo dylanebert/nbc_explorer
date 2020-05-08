@@ -83,8 +83,9 @@ def get_states():
 
 @app.route('/sample_action')
 def sample_action():
+    path = request.args.get('path')
     action = int(request.args.get('action'))
-    return action_sampling.sample_action(action)
+    return action_sampling.sample_action(path, action)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)

@@ -63,8 +63,8 @@ function play(player, participant, task, startStep, endStep) {
     $('#player' + player).imgplay({rate: 30}).data('imgplay')
 }
 
-function sampleAction(action) {
-    $.getJSON(origin + '/sample_action?action=' + action, function(res) {
+function sampleAction(path, action) {
+    $.getJSON(origin + '/sample_action?action=' + action + '&path=' + path, function(res) {
         $.each(res, function(i, row) {
             play(parseInt(i) + 1, row['participant'], row['task'], row['start_step'], row['end_step'])
         })
@@ -83,8 +83,11 @@ function select() {
 }
 
 function sample() {
-    $('#actionSelect option:selected').each(function() {
-        sampleAction($(this).data('value'));
+    $('#pathSelect option:selected').each(function() {
+        let path = $(this).data('value')
+        $('#actionSelect option:selected').each(function() {
+            sampleAction(path, $(this).data('value'));
+        })
     })
 }
 
