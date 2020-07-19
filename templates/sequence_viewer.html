@@ -74,6 +74,7 @@
             </div>
         </div>
         <button type="submit" class="btn btn-secondary">View</button>
+        <button type="button" class="btn btn-secondary" id="next">Next</button>
     </form>
     <div id="playerWrapper"></div>
 </div>
@@ -96,10 +97,21 @@ $(document).ready(function() {
     $('#startStepInput').change(function() {
         $('#endStepInput').val(parseInt($(this).val()) + 450)
     })
-    $('.playForm').submit(function(e) {
-        e.preventDefault()
+
+    function submit() {
         $('#playerWrapper').html(`<div id="player" class="imageplayer"></div>`)
         play()
+    }
+    $('.playForm').submit(function(e) {
+        e.preventDefault()
+        submit()
+    })
+
+    $('#next').click(function(e) {
+        e.preventDefault()
+        $('#startStepInput').val(parseInt($('#startStepInput').val()) + 450)
+        $('#endStepInput').val(parseInt($('#startStepInput').val()) + 450)
+        submit()
     })
 })
 </script>
