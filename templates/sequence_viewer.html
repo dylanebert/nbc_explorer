@@ -87,7 +87,8 @@ function play() {
     let startStep = parseInt($('#startStepInput').val())
     let endStep = parseInt($('#endStepInput').val())
     for(i = startStep; i < endStep; i += 3) {
-        let line = `<img src="https://storage.googleapis.com/nbc_release/` + participant + `/` + participant + `_task` + task + `/` + i + `.png" />`
+        let line = `<img src="/images/` + participant + `_task` + task + `/` + i + `.png" />`
+        //let line = `<img src="https://storage.googleapis.com/nbc_release/` + participant + `/` + participant + `_task` + task + `/` + i + `.png" />`
         $('#player').append(line)
     }
     $('#player').imgplay({rate: 30}).data('imgplay').play()

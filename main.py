@@ -1,7 +1,7 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_from_directory
 from flask_cors import CORS
 import explorer
-import crowdsource
+#import crowdsource
 import json
 import action_sampling
 
@@ -29,7 +29,7 @@ def get_questions():
     return explorer.get_questions(idx)
 
 #---crowdsourcing---
-@app.route('/crowdsource')
+'''@app.route('/crowdsource')
 def crowdsource_page():
     return render_template('crowdsource.html')
 
@@ -50,6 +50,7 @@ def save_response():
     res = json.loads(request.args.get('res'))
     crowdsource.save_response(id, res)
     return 'done'
+'''
 
 #---sequence viewer---
 @app.route('/sequence')
@@ -86,6 +87,10 @@ def sample_action():
     path = request.args.get('path')
     action = int(request.args.get('action'))
     return action_sampling.sample_action(path, action)
+
+@app.route('/images/<path:path>')
+def send_images(path):
+    return send_from_directory('/media/dylan/Elements/nbc/images', path)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
